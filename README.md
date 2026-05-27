@@ -118,7 +118,7 @@ For production, configure PostgreSQL:
 DATABASE_URL=postgresql://user:password@host:5432/database
 PGSSL=true
 GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.1-flash-lite
 ```
 
 Do not commit real credentials. Use `.env.example` as the template.

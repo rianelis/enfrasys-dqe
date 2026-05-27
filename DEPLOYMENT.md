@@ -71,7 +71,7 @@ Set these environment variables on the Container App to enable AI-assisted recom
 
 ```powershell
 az containerapp secret set --name enfrasys-dqe --resource-group rg-enfrasys-dqe --secrets gemini-api-key=<your-key>
-az containerapp update --name enfrasys-dqe --resource-group rg-enfrasys-dqe --set-env-vars GEMINI_API_KEY=secretref:gemini-api-key GEMINI_MODEL=gemini-2.5-flash
+az containerapp update --name enfrasys-dqe --resource-group rg-enfrasys-dqe --set-env-vars GEMINI_API_KEY=secretref:gemini-api-key GEMINI_MODEL=gemini-3.1-flash-lite
 ```
 
 Without `GEMINI_API_KEY`, DQE uses its deterministic recommendation fallback.

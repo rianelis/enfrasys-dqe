@@ -591,7 +591,7 @@ app.post("/api/ai-recommendation", async (request, response) => {
   }
 
   try {
-    const model = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+    const model = process.env.GEMINI_MODEL ?? "gemini-3.1-flash-lite";
     const aiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: "POST",
       headers: {
