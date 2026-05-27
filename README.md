@@ -52,7 +52,7 @@ Current prototype capabilities:
 - Approval workflow with draft, submitted, approved, rejected, and revision states.
 - PDF export / download report.
 - Rule-based recommendation output.
-- Basic AI recommendation extension point.
+- Gemini-powered AI recommendation support with deterministic fallback.
 
 ## Technology Stack
 
@@ -125,21 +125,24 @@ Do not commit real credentials. Use `.env.example` as the template.
 
 ## Demo Scenario
 
-Example demo case:
+The live Azure prototype includes two saved demo assessments in PostgreSQL:
 
-| Field | Example |
+| Customer | Opportunity | Purpose | Status |
 | --- | --- |
-| Customer | Prolintas |
-| Opportunity | TCS Cloud Modernisation POC |
-| Owner | Spyros |
-| Sector | Transportation / Highway |
-| Deal value | RM 1M-5M or unknown |
-| Timeline | 3-6 months |
-| Procurement type | Direct / RFP |
-| Services | Azure Infrastructure, Hybrid Cloud, Security, Managed Services |
-| Key risks | Vendor dependency, timeline, scope clarity, operations/SLA |
+| Prolintas | TCS Cloud Modernisation POC | Cloud modernisation and managed operations qualification | Proceed With Caution |
+| Cypark | Smart City / VMS Platform Assessment | Smart City / VMS, cloud, security, data, and support qualification | Proceed With Caution |
 
-Use the demo case to create an assessment, review the score, submit for approval, and export the PDF report.
+Use these records to demonstrate dashboard history, reopen/save behaviour, scoring, risk review, approval workflow, Gemini AI recommendation, and PDF export.
+
+To create a new assessment, use this basic flow:
+
+1. Start from Dashboard.
+2. Select New Assessment.
+3. Complete Overview required fields.
+4. Select Service Scope.
+5. Score Capability and Risk.
+6. Review Score and recommendation.
+7. Export PDF or submit for approval.
 
 ## Screenshots And Evidence
 
@@ -166,7 +169,7 @@ Recommended next improvements:
 - Add commercial qualification scoring including budget confirmation, decision maker, funding source, strategic account value, partner dependency, margin confidence, submission effort, and win probability.
 - Make the service catalogue fully editable as admin data.
 - Add role-based access control for admin and approver actions.
-- Improve AI-generated recommendations using deal notes, risks, selected services, and capability gaps.
+- Improve Gemini-generated recommendations with internal templates, assumptions, exclusions, and BD guidebook content.
 - Add scenario comparison for current scope, reduced scope, partner-supported scope, and extended timeline.
 
 ## Related Report

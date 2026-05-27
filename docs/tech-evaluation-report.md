@@ -36,7 +36,7 @@ The prototype considered the following technology directions:
 | PostgreSQL | Suitable for persistent multi-user production data |
 | SQLite | Useful for local prototype fallback |
 | Azure Container Apps | Suitable for deploying the prototype as a reviewable internal web app |
-| Gemini API | Used for AI-assisted executive recommendation generation |
+| Gemini API | Used for AI-assisted executive recommendation generation with `gemini-3.1-flash-lite` |
 | Azure AI / private AI model | Future option for recommendations and proposal assistance |
 | RAG / document search | Recommended AI starting point using internal documents and guidebooks |
 
@@ -61,6 +61,7 @@ The current prototype demonstrates:
 | Approval Workflow | Submit, approve, reject, or request revision |
 | PDF Export | Produce a downloadable qualification summary |
 | Admin Configuration | Manage scoring defaults, thresholds, and recommendation rules |
+| Gemini Recommendation | Generate AI-assisted executive guidance from deal notes, selected services, risks, and scoring output |
 
 ## Alignment To BD Process
 
@@ -96,29 +97,21 @@ Positioning statement:
 
 ## Demo Scenario
 
-Recommended demo case:
+The live Azure prototype includes two saved demo assessments in PostgreSQL:
 
-| Field | Example |
+| Customer | Opportunity | Purpose | Result |
 | --- | --- |
-| Customer | Prolintas |
-| Opportunity | TCS Cloud Modernisation POC |
-| Owner | Spyros |
-| Sector | Transportation / Highway |
-| Deal value | RM 1M-5M or unknown |
-| Timeline | 3-6 months |
-| Procurement type | Direct / RFP |
-| Services | Azure Infrastructure, Hybrid Cloud, Security, Managed Services |
-| Key risks | Vendor dependency, timeline pressure, scope clarity, operations/SLA |
+| Prolintas | TCS Cloud Modernisation POC | Demonstrates cloud modernisation, hybrid readiness, security, and managed operations qualification | Proceed With Caution |
+| Cypark | Smart City / VMS Platform Assessment | Demonstrates Smart City / VMS, integration/API dependency, security, data platform, and support model qualification | Proceed With Caution |
 
 Demo flow:
 
-1. Create a new assessment from the dashboard.
-2. Fill in the overview and requirement intake details.
-3. Select service scope.
-4. Score capability and risk.
-5. Review the recommendation.
-6. Submit for approval.
-7. Export the PDF report.
+1. Open the live Azure dashboard.
+2. Open the Prolintas or Cypark demo assessment.
+3. Review the Overview, Service Scope, Capability, and Risk pages.
+4. Review the recommendation and top risks on the Score page.
+5. Generate the Gemini AI recommendation.
+6. Submit for approval or export the PDF report.
 
 ## Screenshots And Evidence
 
@@ -143,7 +136,7 @@ Current limitations:
 
 - Service catalogue is still read-only.
 - Commercial qualification factors are not fully scored yet.
-- AI recommendation is basic and should be expanded using internal knowledge.
+- Gemini recommendation is enabled, but it should be expanded later with internal knowledge, proposal templates, assumptions, exclusions, and BD guidebook content.
 - Role-based access control is not yet implemented.
 - BD process alignment is documented but not yet embedded as a full workflow module.
 

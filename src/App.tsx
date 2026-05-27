@@ -789,6 +789,9 @@ function HelpStep({ onStart }: { onStart: () => void }) {
           <p>
             Fill the assessment with the best information available at qualification stage. The goal is not perfection; the goal is a consistent view of deal fit, risk, capability, and next action.
           </p>
+          <p>
+            The live Azure dashboard includes two demo assessments: Prolintas TCS Cloud Modernisation POC and Cypark Smart City / VMS Platform Assessment.
+          </p>
         </div>
         <button className="primary-action" onClick={onStart} type="button">
           <Plus size={16} aria-hidden="true" />
@@ -862,13 +865,37 @@ function HelpStep({ onStart }: { onStart: () => void }) {
             <li>Green: proceed with normal governance.</li>
             <li>Amber: proceed with mitigation actions.</li>
             <li>Red: escalate before committing scope or timeline.</li>
+            <li>Use Generate to create a Gemini-assisted executive recommendation when the API key is configured.</li>
+          </ul>
+        </article>
+
+        <article className="help-card">
+          <span>7</span>
+          <strong>Approval</strong>
+          <p>Use approval actions after the assessment has enough detail for review.</p>
+          <ul>
+            <li>Submit: send the assessment for management or solution review.</li>
+            <li>Approve: confirm the current scope and recommendation.</li>
+            <li>Revise: request updates before proceeding.</li>
+            <li>Reject: mark the opportunity as not qualified in its current form.</li>
+          </ul>
+        </article>
+
+        <article className="help-card">
+          <span>8</span>
+          <strong>PDF Export</strong>
+          <p>Export the result when you need to share the qualification summary with managers or attach evidence to the BD review.</p>
+          <ul>
+            <li>Export after reviewing top risks and recommended next action.</li>
+            <li>Use notes to capture assumptions, exclusions, and clarification points.</li>
+            <li>Keep the exported report as evidence for the Transformation prototype review.</li>
           </ul>
         </article>
       </div>
 
       <section className="help-callout">
         <strong>Recommended workflow</strong>
-        <p>Dashboard → New Assessment → Overview → Service Scope → Capability → Risk → Score → Save / Export / Submit for approval.</p>
+        <p>Dashboard &gt; New Assessment &gt; Overview &gt; Service Scope &gt; Capability &gt; Risk &gt; Score &gt; Generate AI Recommendation &gt; Save / Export / Submit for approval.</p>
       </section>
     </div>
   );

@@ -31,6 +31,8 @@ docker run --rm -p 4100:4100 -v ${PWD}/server/data:/app/server/data enfrasys-dqe
 - Container registry: `cab2257a59daacr.azurecr.io`
 - Database: Azure Database for PostgreSQL Flexible Server
 - Public URL: `https://enfrasys-dqe.politecliff-7166fcf2.southeastasia.azurecontainerapps.io/`
+- Current live demo records: Prolintas TCS Cloud Modernisation POC and Cypark Smart City / VMS Platform Assessment
+- Gemini model: `gemini-3.1-flash-lite`
 
 Redeploy the current local code:
 
