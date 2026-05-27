@@ -36,6 +36,7 @@ The prototype considered the following technology directions:
 | PostgreSQL | Suitable for persistent multi-user production data |
 | SQLite | Useful for local prototype fallback |
 | Azure Container Apps | Suitable for deploying the prototype as a reviewable internal web app |
+| Gemini API | Used for AI-assisted executive recommendation generation |
 | Azure AI / private AI model | Future option for recommendations and proposal assistance |
 | RAG / document search | Recommended AI starting point using internal documents and guidebooks |
 

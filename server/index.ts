@@ -571,10 +571,12 @@ function fallbackAiRecommendation(input: DqeInput, result: DqeResult) {
   ].join(" ");
 }
 
-function extractOutputText(payload: unknown) {
-  const response = payload as { output_text?: string; output?: Array<{ content?: Array<{ text?: string }> }> };
-  if (response.output_text) return response.output_text;
-  return response.output?.flatMap((item) => item.content?.map((content) => content.text ?? "") ?? []).join("\n").trim() ?? "";
+function extractGeminiText(payload: unknown) {
+  const response = payload as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+  return response.candidates
+    ?.flatMap((candidate) => candidate.content?.parts?.map((part) => part.text ?? "") ?? [])
+    .join("\n")
+    .trim() ?? "";
 }
 
 app.post("/api/ai-recommendation", async (request, response) => {
@@ -583,29 +585,45 @@ app.post("/api/ai-recommendation", async (request, response) => {
   const result = (request.body?.result ?? calculateDqe(input, thresholds)) as DqeResult;
   const fallback = fallbackAiRecommendation(input, result);
 
-  if (!process.env.OPENAI_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     response.json({ source: "fallback", recommendation: fallback });
     return;
   }
 
   try {
-    const aiResponse = await fetch("https://api.openai.com/v1/responses", {
+    const model = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+    const aiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+        "x-goog-api-key": process.env.GEMINI_API_KEY
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL ?? "gpt-5.2",
-        instructions:
-          "You are a senior presales qualification advisor. Write concise executive guidance for a deal review. Be specific, action-oriented, and avoid hype.",
-        input: JSON.stringify({
-          deal: input.overview,
-          selectedServices: services.filter((service) => input.requiredServices[service.id]).map((service) => service.name),
-          riskScores: input.risk,
-          weights: input.weights,
-          result
-        })
+        systemInstruction: {
+          parts: [
+            {
+              text:
+                "You are a senior presales qualification advisor. Write concise executive guidance for a deal review. Be specific, action-oriented, and avoid hype."
+            }
+          ]
+        },
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: JSON.stringify({
+                  task: "Generate an executive DQE recommendation for this deal assessment.",
+                  deal: input.overview,
+                  selectedServices: services.filter((service) => input.requiredServices[service.id]).map((service) => service.name),
+                  riskScores: input.risk,
+                  weights: input.weights,
+                  result
+                })
+              }
+            ]
+          }
+        ]
       })
     });
 
@@ -615,7 +633,7 @@ app.post("/api/ai-recommendation", async (request, response) => {
     }
 
     const payload = await aiResponse.json();
-    response.json({ source: "openai", recommendation: extractOutputText(payload) || fallback });
+    response.json({ source: "gemini", recommendation: extractGeminiText(payload) || fallback });
   } catch {
     response.json({ source: "fallback", recommendation: fallback });
   }

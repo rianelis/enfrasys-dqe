@@ -434,9 +434,9 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input, result, thresholds: adminConfig.thresholds })
       });
-      const payload = (await response.json()) as { recommendation: string; source: "openai" | "fallback" };
+      const payload = (await response.json()) as { recommendation: string; source: "gemini" | "fallback" };
       setAiRecommendation(payload.recommendation);
-      setAiState(payload.source === "openai" ? "ready" : "fallback");
+      setAiState(payload.source === "gemini" ? "ready" : "fallback");
     } catch {
       setAiRecommendation(result.recommendation);
       setAiState("error");
@@ -1415,7 +1415,7 @@ function ScoreStep({
           {aiRecommendation ||
             "Generate an AI-assisted presales narrative using deal notes, selected services, risk scores, and capability gaps."}
         </p>
-        {aiState === "fallback" && <small>OpenAI key is not configured; showing deterministic fallback.</small>}
+        {aiState === "fallback" && <small>Gemini key is not configured; showing deterministic fallback.</small>}
         {aiState === "error" && <small>AI service unavailable; showing deterministic fallback.</small>}
       </div>
       <ScenarioComparison input={input} thresholds={thresholds} />

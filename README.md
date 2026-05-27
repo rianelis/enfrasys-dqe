@@ -62,6 +62,7 @@ Current prototype capabilities:
 - Shared TypeScript scoring engine.
 - PostgreSQL for production persistence.
 - SQLite fallback for local prototype usage.
+- Gemini API for AI-assisted recommendations.
 - jsPDF for report export.
 - Azure Container Apps deployment.
 
@@ -116,6 +117,8 @@ For production, configure PostgreSQL:
 ```text
 DATABASE_URL=postgresql://user:password@host:5432/database
 PGSSL=true
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-2.5-flash
 ```
 
 Do not commit real credentials. Use `.env.example` as the template.
