@@ -56,7 +56,9 @@ Current prototype capabilities:
 
 - Dashboard with assessment history.
 - Requirement intake and deal overview form.
-- Service scope checklist.
+- Enfrasys service scope checklist with 30 catalogue services across cloud,
+  application/integration, data/AI, security, industry, and managed/advisory
+  portfolios.
 - Capability scoring.
 - Risk matrix for development, time, and operations.
 - Editable assessment-level scoring weights.
@@ -69,6 +71,20 @@ Current prototype capabilities:
 - PDF export / download report.
 - Rule-based recommendation output.
 - Gemini-powered AI recommendation support with deterministic fallback.
+
+## Service Catalogue
+
+The prototype now uses an Enfrasys-specific read-only service catalogue instead
+of a generic cloud list.
+
+| Portfolio                   | Example services                                                                              |
+| --------------------------- | --------------------------------------------------------------------------------------------- |
+| Cloud & Infrastructure      | Azure Landing Zone, Azure Infrastructure, Cloud Migration, Hybrid Connectivity, Backup & DR   |
+| Application & Integration   | Application Modernisation, API / Middleware Integration, Containerisation, DevOps / CI/CD     |
+| Data, AI & Analytics        | Microsoft Fabric, Data Platform, AI / GenAI Solutions, RAG / Knowledge Search, BI & Reporting |
+| Security & Governance       | Zero Trust, IAM, Defender / XDR, Compliance & Governance, SOC / Monitoring                    |
+| Industry Solutions          | Smart City / IoT, VMS / Video Analytics, Toll / Transport Systems, Business Applications      |
+| Managed & Advisory Services | Managed Services, Assessment / Workshop, Architecture Advisory, Training & Adoption, FinOps   |
 
 ## Technology Stack
 
@@ -183,10 +199,8 @@ The repository includes a screenshot evidence pack:
 
 Recommended next improvements:
 
-- Expand service catalogue with Enfrasys-specific offerings such as AI / GenAI
-  Solutioning, Microsoft Fabric / Data Platform, Application Modernisation,
-  Integration / API / Middleware, VMS / Smart City / IoT, and Managed Services /
-  Support Model.
+- Make the service catalogue editable from Admin so portfolio owners can add,
+  disable, describe, and classify Enfrasys offerings without changing code.
 - Add commercial qualification scoring including budget confirmation, decision
   maker, funding source, strategic account value, partner dependency, margin
   confidence, submission effort, and win probability.

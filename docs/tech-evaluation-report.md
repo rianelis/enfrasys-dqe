@@ -73,7 +73,7 @@ The current prototype demonstrates:
 | --------------------- | ----------------------------------------------------------------------------------------------------- |
 | Dashboard             | List previous assessments, scores, owners, status, and last updated date                              |
 | Requirement Intake    | Capture customer requirement, tender/RFP summary, timeline, budget, scope, and sector                 |
-| Service Scope         | Select services relevant to the opportunity                                                           |
+| Service Scope         | Select Enfrasys-specific services relevant to the opportunity                                         |
 | Capability Match      | Score delivery confidence and capability alignment                                                    |
 | Risk Matrix           | Assess development, time, and operations risks                                                        |
 | Qualification Score   | Calculate score and recommendation                                                                    |
@@ -81,6 +81,25 @@ The current prototype demonstrates:
 | PDF Export            | Produce a downloadable qualification summary                                                          |
 | Admin Configuration   | Manage scoring defaults, thresholds, and recommendation rules                                         |
 | Gemini Recommendation | Generate AI-assisted executive guidance from deal notes, selected services, risks, and scoring output |
+
+## Service Catalogue Alignment
+
+The service catalogue has been upgraded from broad generic categories into six
+Enfrasys-oriented portfolios.
+
+| Portfolio                   | Included service examples                                                                     |
+| --------------------------- | --------------------------------------------------------------------------------------------- |
+| Cloud & Infrastructure      | Azure Landing Zone, Azure Infrastructure, Cloud Migration, Hybrid Connectivity, Backup & DR   |
+| Application & Integration   | Application Modernisation, API / Middleware Integration, Containerisation, DevOps / CI/CD     |
+| Data, AI & Analytics        | Microsoft Fabric, Data Platform, AI / GenAI Solutions, RAG / Knowledge Search, BI & Reporting |
+| Security & Governance       | Zero Trust, IAM, Defender / XDR, Compliance & Governance, SOC / Monitoring                    |
+| Industry Solutions          | Smart City / IoT, VMS / Video Analytics, Toll / Transport Systems, Business Applications      |
+| Managed & Advisory Services | Managed Services, Assessment / Workshop, Architecture Advisory, Training & Adoption, FinOps   |
+
+This makes DQE closer to an internal Enfrasys presales tool rather than a
+generic cloud scoring demo. The catalogue remains read-only in this version, so
+the next improvement is to make it editable from Admin while preserving saved
+assessment history.
 
 ## Alignment To BD Process
 
@@ -173,13 +192,13 @@ Current limitations:
 
 Recommended next phase:
 
-1. Expand the service catalogue for Enfrasys internal offerings:
-   - AI / GenAI Solutioning.
-   - Microsoft Fabric / Data Platform.
-   - Application Modernisation.
-   - Integration / API / Middleware.
-   - VMS / Smart City / IoT.
-   - Managed Services / Support Model.
+1. Make the service catalogue editable through admin configuration:
+   - Add service.
+   - Edit description.
+   - Disable service.
+   - Assign category.
+   - Set default capability.
+   - Mark strategic service.
 2. Add commercial qualification scoring:
    - Budget confirmed.
    - Decision maker identified.

@@ -1,4 +1,4 @@
-export type ServiceGroup = "cloud" | "modernWork" | "security" | "dataManaged";
+export type ServiceGroup = "cloud" | "appIntegration" | "dataAi" | "security" | "industry" | "managedAdvisory";
 
 export type Service = {
   id: string;
@@ -72,6 +72,14 @@ export const defaultThresholds: ScoreThresholds = {
 
 export const services: Service[] = [
   {
+    id: "azureLandingZone",
+    group: "cloud",
+    name: "Azure Landing Zone",
+    description: "CAF-aligned subscriptions, identity, network, policy, and governance foundation",
+    defaultRequired: true,
+    defaultCapability: { skills: 4, tools: 4, experience: 4 }
+  },
+  {
     id: "cloudMigration",
     group: "cloud",
     name: "Cloud Migration",
@@ -90,8 +98,8 @@ export const services: Service[] = [
   {
     id: "hybridMultiCloud",
     group: "cloud",
-    name: "Hybrid / Multi-Cloud",
-    description: "On-premise plus cloud integration, Azure Arc, ExpressRoute",
+    name: "Hybrid Connectivity",
+    description: "On-premise, Azure Arc, ExpressRoute, VPN, DNS, and network integration",
     defaultRequired: false,
     defaultCapability: { skills: 3, tools: 3, experience: 3 }
   },
@@ -105,15 +113,15 @@ export const services: Service[] = [
   },
   {
     id: "microsoft365",
-    group: "modernWork",
+    group: "managedAdvisory",
     name: "Microsoft 365",
     description: "Exchange, Teams, SharePoint, OneDrive deployment",
-    defaultRequired: true,
+    defaultRequired: false,
     defaultCapability: { skills: 4, tools: 4, experience: 4 }
   },
   {
     id: "modernWorkplace",
-    group: "modernWork",
+    group: "managedAdvisory",
     name: "Modern Workplace",
     description: "Windows 365, AVD, Intune, device management",
     defaultRequired: false,
@@ -121,17 +129,41 @@ export const services: Service[] = [
   },
   {
     id: "powerPlatform",
-    group: "modernWork",
-    name: "Power Platform",
-    description: "Power Apps, Power Automate, Power BI",
-    defaultRequired: true,
+    group: "industry",
+    name: "Business Applications",
+    description: "Power Platform, workflow automation, reporting apps, and business process tooling",
+    defaultRequired: false,
     defaultCapability: { skills: 3, tools: 3, experience: 3 }
   },
   {
     id: "appModernization",
-    group: "modernWork",
-    name: "Application Modernization",
+    group: "appIntegration",
+    name: "Application Modernisation",
     description: "Legacy app re-architecture, containers, microservices",
+    defaultRequired: false,
+    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+  },
+  {
+    id: "apiMiddlewareIntegration",
+    group: "appIntegration",
+    name: "API / Middleware Integration",
+    description: "Systems integration, middleware, API gateway, eventing, and data exchange",
+    defaultRequired: false,
+    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+  },
+  {
+    id: "containerisation",
+    group: "appIntegration",
+    name: "Containerisation",
+    description: "Container strategy, AKS, app packaging, runtime standards, and platform readiness",
+    defaultRequired: false,
+    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+  },
+  {
+    id: "devopsCicd",
+    group: "appIntegration",
+    name: "DevOps / CI/CD",
+    description: "Azure DevOps, GitHub workflows, release pipelines, IaC, and deployment governance",
     defaultRequired: false,
     defaultCapability: { skills: 3, tools: 3, experience: 3 }
   },
@@ -146,8 +178,8 @@ export const services: Service[] = [
   {
     id: "endpointProtection",
     group: "security",
-    name: "Endpoint & Threat Protection",
-    description: "Defender suite, EDR/XDR, threat hunting",
+    name: "Defender / XDR",
+    description: "Microsoft Defender suite, EDR/XDR, threat hunting, and response workflow",
     defaultRequired: false,
     defaultCapability: { skills: 3, tools: 3, experience: 3 }
   },
@@ -162,40 +194,120 @@ export const services: Service[] = [
   {
     id: "identityAccess",
     group: "security",
-    name: "Identity & Access Management",
+    name: "IAM",
     description: "Azure AD, SSO, PIM, B2B/B2C identity",
     defaultRequired: false,
     defaultCapability: { skills: 3, tools: 3, experience: 3 }
   },
   {
+    id: "socMonitoring",
+    group: "security",
+    name: "SOC / Monitoring",
+    description: "Sentinel, SOC operations, monitoring design, alerting, and incident response flow",
+    defaultRequired: false,
+    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+  },
+  {
+    id: "microsoftFabric",
+    group: "dataAi",
+    name: "Microsoft Fabric",
+    description: "Fabric workspace, lakehouse, pipelines, semantic model, and reporting readiness",
+    defaultRequired: true,
+    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+  },
+  {
     id: "dataAnalytics",
-    group: "dataManaged",
-    name: "Data & Analytics",
-    description: "Azure Data Factory, Synapse, Fabric, IoT, AI/ML",
+    group: "dataAi",
+    name: "Data Platform",
+    description: "Azure Data Factory, Synapse, lakehouse, data engineering, and analytics foundation",
     defaultRequired: true,
     defaultCapability: { skills: 4, tools: 3, experience: 3 }
   },
   {
+    id: "aiGenAiSolutions",
+    group: "dataAi",
+    name: "AI / GenAI Solutions",
+    description: "AI solutioning, prompt workflows, copilots, assistants, and responsible AI controls",
+    defaultRequired: false,
+    defaultCapability: { skills: 3, tools: 3, experience: 2 }
+  },
+  {
+    id: "ragKnowledgeSearch",
+    group: "dataAi",
+    name: "RAG / Knowledge Search",
+    description: "Document ingestion, embeddings, vector search, grounding, and answer evaluation",
+    defaultRequired: false,
+    defaultCapability: { skills: 3, tools: 3, experience: 2 }
+  },
+  {
+    id: "biReporting",
+    group: "dataAi",
+    name: "BI & Reporting",
+    description: "Power BI, executive dashboards, semantic models, and KPI reporting",
+    defaultRequired: false,
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
+  },
+  {
+    id: "smartCityIot",
+    group: "industry",
+    name: "Smart City / IoT",
+    description: "IoT platforms, smart operations, sensors, edge connectivity, and command centre feeds",
+    defaultRequired: false,
+    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+  },
+  {
+    id: "vmsVideoAnalytics",
+    group: "industry",
+    name: "VMS / Video Analytics",
+    description: "Video management, camera/vendor integration, analytics, retention, and operations model",
+    defaultRequired: false,
+    defaultCapability: { skills: 3, tools: 3, experience: 2 }
+  },
+  {
+    id: "tollTransportSystems",
+    group: "industry",
+    name: "Toll / Transport Systems",
+    description: "Highway, tolling, transport operations, integration, and platform dependency review",
+    defaultRequired: false,
+    defaultCapability: { skills: 3, tools: 2, experience: 2 }
+  },
+  {
     id: "managedServices",
-    group: "dataManaged",
+    group: "managedAdvisory",
     name: "Managed Services",
     description: "NOC/SOC, L1-L3 support, SLA-based operations",
     defaultRequired: true,
     defaultCapability: { skills: 4, tools: 4, experience: 4 }
   },
   {
+    id: "assessmentWorkshop",
+    group: "managedAdvisory",
+    name: "Assessment / Workshop",
+    description: "Discovery workshops, cloud readiness, risk review, and qualification artefacts",
+    defaultRequired: false,
+    defaultCapability: { skills: 4, tools: 3, experience: 4 }
+  },
+  {
     id: "advisoryStrategy",
-    group: "dataManaged",
-    name: "Advisory & Strategy",
+    group: "managedAdvisory",
+    name: "Architecture Advisory",
     description: "Digital roadmap, architecture design, change management",
     defaultRequired: false,
     defaultCapability: { skills: 3, tools: 3, experience: 3 }
   },
   {
     id: "trainingAdoption",
-    group: "dataManaged",
+    group: "managedAdvisory",
     name: "Training & Adoption",
     description: "End-user training, LMS, change adoption programmes",
+    defaultRequired: false,
+    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+  },
+  {
+    id: "finops",
+    group: "managedAdvisory",
+    name: "FinOps",
+    description: "Cloud cost governance, consumption review, tagging, budget alerts, and optimisation",
     defaultRequired: false,
     defaultCapability: { skills: 3, tools: 3, experience: 3 }
   }
@@ -290,9 +402,11 @@ export const riskFactors: RiskFactor[] = [
 
 export const groupLabels: Record<ServiceGroup | RiskGroup, string> = {
   cloud: "Cloud & Infrastructure",
-  modernWork: "Modern Work & Productivity",
-  security: "Security & Compliance",
-  dataManaged: "Data & Managed Services",
+  appIntegration: "Application & Integration",
+  dataAi: "Data, AI & Analytics",
+  security: "Security & Governance",
+  industry: "Industry Solutions",
+  managedAdvisory: "Managed & Advisory Services",
   development: "Development Risk",
   time: "Time Risk",
   operations: "Operations Risk"

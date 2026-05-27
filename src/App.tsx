@@ -94,7 +94,7 @@ type AssessmentRecord = {
   archivedAt: string | null;
 };
 
-const serviceGroups: ServiceGroup[] = ["cloud", "modernWork", "security", "dataManaged"];
+const serviceGroups: ServiceGroup[] = ["cloud", "appIntegration", "dataAi", "security", "industry", "managedAdvisory"];
 const riskGroups: RiskGroup[] = ["development", "time", "operations"];
 const requiredOverviewFields: Array<keyof DqeInput["overview"]> = ["customer", "owner", "dealValue", "sector", "timeline"];
 
@@ -816,8 +816,9 @@ function HelpStep({ onStart }: { onStart: () => void }) {
         <article className="help-card">
           <span>2</span>
           <strong>Service Scope</strong>
-          <p>Select the services that are actually required for this deal. These selections drive the capability scoring section.</p>
+          <p>Select the Enfrasys services that are actually required for this deal. These selections drive the capability scoring section.</p>
           <ul>
+            <li>Use the portfolio groups to scan cloud, application, data/AI, security, industry, and managed/advisory services.</li>
             <li>Select only services in scope for this opportunity.</li>
             <li>Leave uncertain services unchecked until confirmed.</li>
             <li>Use the notes field in Overview for unclear requirements.</li>
