@@ -1,0 +1,165 @@
+# Tech Evaluation Report: Enfrasys Deal Qualification Engine
+
+## Executive Summary
+
+The Enfrasys Deal Qualification Engine (DQE) is a Transformation prototype for structured opportunity qualification, technical risk assessment, and proposal readiness. It converts an Excel-based assessment model into a reusable web application that BD, presales, solutioning, and delivery teams can use before committing effort to tenders, RFPs, and proposal work.
+
+The recommended approach is to start with a structured workflow and scoring engine, then extend it with document-based knowledge search and AI-assisted recommendations. This avoids the risk of trying to train a custom AI model too early, while still creating a practical foundation for internal AI adoption.
+
+## Business Problem
+
+Current deal qualification can depend heavily on manual review, scattered documents, and individual experience. This creates several issues:
+
+- Opportunity decisions may be inconsistent across teams.
+- Technical risk may be identified too late in the proposal process.
+- BD and presales effort may be spent on weak or unclear opportunities.
+- Management review may lack a clear scoring basis.
+- Assumptions, exclusions, and clarification points may not be captured consistently.
+
+The result is avoidable rework, unclear ownership, and difficulty connecting technical qualification to the wider BD process flow.
+
+## Proposed Solution
+
+DQE provides a structured decision workflow for deal qualification. Users capture deal details, select relevant services, score capability, evaluate delivery risks, generate a recommendation, and submit the assessment for review.
+
+The application acts as a qualification checkpoint before proposal commitment. It does not replace BD judgement, but it gives the team a repeatable process and evidence base for decisions.
+
+## Technology Evaluated
+
+The prototype considered the following technology directions:
+
+| Technology | Evaluation |
+| --- | --- |
+| Excel framework | Useful for defining logic, but manual and static for wider team usage |
+| React web app | Suitable for guided forms, reusable workflow, dashboard, and reporting |
+| Node.js API | Suitable for lightweight backend orchestration and scoring endpoints |
+| PostgreSQL | Suitable for persistent multi-user production data |
+| SQLite | Useful for local prototype fallback |
+| Azure Container Apps | Suitable for deploying the prototype as a reviewable internal web app |
+| Azure AI / private AI model | Future option for recommendations and proposal assistance |
+| RAG / document search | Recommended AI starting point using internal documents and guidebooks |
+
+## Recommended Approach
+
+The recommended approach is to start with RAG plus structured workflow, not full model training from scratch.
+
+RAG is more suitable for the next phase because it can use internal process documents, service catalogues, proposal templates, assumptions, exclusions, and historical examples without needing a custom trained model. The structured DQE workflow should remain the source of assessment data, while AI can help generate recommendations and proposal support content.
+
+## Prototype Scope
+
+The current prototype demonstrates:
+
+| Module | Purpose |
+| --- | --- |
+| Dashboard | List previous assessments, scores, owners, status, and last updated date |
+| Requirement Intake | Capture customer requirement, tender/RFP summary, timeline, budget, scope, and sector |
+| Service Scope | Select services relevant to the opportunity |
+| Capability Match | Score delivery confidence and capability alignment |
+| Risk Matrix | Assess development, time, and operations risks |
+| Qualification Score | Calculate score and recommendation |
+| Approval Workflow | Submit, approve, reject, or request revision |
+| PDF Export | Produce a downloadable qualification summary |
+| Admin Configuration | Manage scoring defaults, thresholds, and recommendation rules |
+
+## Alignment To BD Process
+
+DQE should be positioned as a technical qualification checkpoint inside the wider BD process flow being prepared for tenders, POs, sales orders, and team reference guidance.
+
+| BD stage | DQE role |
+| --- | --- |
+| Tender/RFP received | Create a DQE assessment |
+| Initial qualification | Score opportunity fit and readiness |
+| Technical review | Validate service scope, capability, dependencies, and delivery risks |
+| Proposal decision | Recommend proceed, proceed with conditions, clarify, escalate, or no-go |
+| Proposal development | Capture assumptions, exclusions, clarification questions, and SOW inputs |
+| Management approval | Submit the assessment for approval or revision |
+| PO / sales order | Use approved scope, risks, and assumptions as reference |
+
+This makes DQE complementary to the BD framework rather than a separate standalone tool.
+
+## Alignment To Transformation KPI
+
+DQE supports the Transformation KPI by digitizing and standardizing a manual qualification process.
+
+Transformation value:
+
+- Converts spreadsheet logic into an operational web application.
+- Improves consistency in tender/RFP assessment.
+- Creates reusable data for review and reporting.
+- Provides a foundation for AI-assisted proposal support.
+- Supports smoother cross-functional collaboration between BD, presales, solutioning, and delivery.
+
+Positioning statement:
+
+> This Excel framework was used to define the logic, but it was converted into a structured decision engine that can now be deployed as a web application for scalable presales usage.
+
+## Demo Scenario
+
+Recommended demo case:
+
+| Field | Example |
+| --- | --- |
+| Customer | Prolintas |
+| Opportunity | TCS Cloud Modernisation POC |
+| Owner | Spyros |
+| Sector | Transportation / Highway |
+| Deal value | RM 1M-5M or unknown |
+| Timeline | 3-6 months |
+| Procurement type | Direct / RFP |
+| Services | Azure Infrastructure, Hybrid Cloud, Security, Managed Services |
+| Key risks | Vendor dependency, timeline pressure, scope clarity, operations/SLA |
+
+Demo flow:
+
+1. Create a new assessment from the dashboard.
+2. Fill in the overview and requirement intake details.
+3. Select service scope.
+4. Score capability and risk.
+5. Review the recommendation.
+6. Submit for approval.
+7. Export the PDF report.
+
+## Limitations
+
+Current limitations:
+
+- Service catalogue is still read-only.
+- Commercial qualification factors are not fully scored yet.
+- AI recommendation is basic and should be expanded using internal knowledge.
+- Role-based access control is not yet implemented.
+- Screenshots and demo evidence pack still need to be added.
+- BD process alignment is documented but not yet embedded as a full workflow module.
+
+## Roadmap
+
+Recommended next phase:
+
+1. Add screenshots for dashboard, overview, service scope, capability, risk, score, PDF export, and admin.
+2. Add one completed demo assessment and exported PDF as evidence.
+3. Expand the service catalogue for Enfrasys internal offerings:
+   - AI / GenAI Solutioning.
+   - Microsoft Fabric / Data Platform.
+   - Application Modernisation.
+   - Integration / API / Middleware.
+   - VMS / Smart City / IoT.
+   - Managed Services / Support Model.
+4. Add commercial qualification scoring:
+   - Budget confirmed.
+   - Decision maker identified.
+   - Funding source known.
+   - Strategic account value.
+   - Partner dependency.
+   - Margin confidence.
+   - Submission effort required.
+   - Win probability.
+5. Make the service catalogue editable through admin configuration.
+6. Add role-based access for admins, owners, and approvers.
+7. Add RAG-based proposal assistant using internal templates, service descriptions, assumptions, exclusions, and BD guidebook content.
+8. Improve executive PDF report layout with Enfrasys branding, charts, metadata, and approval/signature section.
+
+## Final Assessment
+
+DQE is already a credible functional prototype. It demonstrates the core engine, workflow, scoring, persistence, approval, reporting, and deployment foundation required for the prototype deliverable.
+
+The remaining gap for the 6 June deliverable is presentation evidence: README, report, screenshots, and one realistic demo case. This report and the repository README address the documentation gap and position the prototype clearly against the Transformation KPI.
+
