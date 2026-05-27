@@ -29,14 +29,25 @@ export type DealOverview = {
   customer: string;
   opportunity: string;
   owner: string;
+  bdOwner: string;
+  solutionOwner: string;
   contactName: string;
   contactRole: string;
+  opportunityType: string;
   stage: string;
   dealValue: string;
   sector: string;
   timeline: string;
   procurementType: string;
   deadlineDate: string;
+  budgetConfirmed: string;
+  decisionMakerIdentified: string;
+  fundingSourceKnown: string;
+  partnerDependency: string;
+  marginConfidence: string;
+  winProbability: string;
+  proposalStatus: string;
+  poSoReference: string;
   notes: string;
 };
 
@@ -416,14 +427,25 @@ export const defaultOverview: DealOverview = {
   customer: "Kementerian Kewangan Malaysia",
   opportunity: "Cloud Migration Phase 1",
   owner: "Presales Team",
+  bdOwner: "BD Team",
+  solutionOwner: "Solution Architect",
   contactName: "",
   contactRole: "IT Director",
+  opportunityType: "Tender / RFP",
   stage: "RFP/ITT Received",
   dealValue: "RM 500K - RM 1M",
   sector: "Government (Federal)",
   timeline: "3-6 months",
   procurementType: "Open Tender",
   deadlineDate: "",
+  budgetConfirmed: "Unknown",
+  decisionMakerIdentified: "Unknown",
+  fundingSourceKnown: "Unknown",
+  partnerDependency: "Medium",
+  marginConfidence: "Medium",
+  winProbability: "Medium",
+  proposalStatus: "Qualification",
+  poSoReference: "",
   notes: "Top requirements: Azure migration, security baseline, managed support readiness."
 };
 

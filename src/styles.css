@@ -328,6 +328,49 @@ h1 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.bd-flow {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.bd-flow strong {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.bd-flow p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.bd-flow-steps {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.bd-flow-steps span {
+  background: #f5f8f4;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  min-height: 42px;
+  padding: 10px;
+}
+
+.bd-flow-steps span.active {
+  background: #fff8e0;
+  border-color: #e2c768;
+  color: var(--ink);
+}
+
 .field {
   display: grid;
   gap: 7px;
@@ -1491,6 +1534,7 @@ h1 {
   }
 
   .form-grid,
+  .bd-flow-steps,
   .metric-grid {
     grid-template-columns: 1fr;
   }

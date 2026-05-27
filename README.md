@@ -40,22 +40,33 @@ It demonstrates:
 DQE is designed to fit inside the BD process flow for tenders, POs, and sales
 orders as a technical and commercial qualification checkpoint.
 
+The DQE prototype is intended to complement the BD process flow by acting as a
+structured qualification checkpoint during the tender/RFP stage. It helps BD and
+solutioning teams assess technical fit, commercial readiness, delivery risk, and
+proposal readiness before committing effort. Once an opportunity proceeds, the
+approved DQE assessment can be used as a reference for proposal development, PO
+processing, and sales order handover.
+
 | BD stage              | DQE role                                                  |
 | --------------------- | --------------------------------------------------------- |
-| Tender/RFP received   | Create a DQE assessment                                   |
-| Initial qualification | Score opportunity fit                                     |
-| Technical review      | Validate scope, capability, and risks                     |
-| Proposal decision     | Recommend proceed, caution, escalate, or no-go            |
+| Tender / RFP Received | Create DQE opportunity intake                             |
+| Initial qualification | Check basic commercial and technical fit                  |
+| Technical review      | Validate service scope, capability, and risks             |
+| Proposal decision     | Recommend proceed, conditions, escalation, or no-go       |
 | Proposal development  | Capture assumptions, exclusions, and clarification points |
 | Management approval   | Submit, approve, reject, or request revision              |
-| PO / sales order      | Reuse approved scope and assumptions as reference         |
+| PO / SO reference     | Reuse approved scope and assumptions as handover evidence |
 
 ## Prototype Scope
 
 Current prototype capabilities:
 
 - Dashboard with assessment history.
-- Requirement intake and deal overview form.
+- Tender/RFP intake and deal overview form.
+- BD process alignment tracker.
+- Basic commercial qualification fields for budget, decision maker, funding,
+  partner dependency, margin confidence, win probability, proposal status, and
+  PO/SO reference.
 - Enfrasys service scope checklist with 30 catalogue services across cloud,
   application/integration, data/AI, security, industry, and managed/advisory
   portfolios.

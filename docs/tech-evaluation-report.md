@@ -107,15 +107,22 @@ DQE should be positioned as a technical qualification checkpoint inside the
 wider BD process flow being prepared for tenders, POs, sales orders, and team
 reference guidance.
 
-| BD stage              | DQE role                                                                 |
-| --------------------- | ------------------------------------------------------------------------ |
-| Tender/RFP received   | Create a DQE assessment                                                  |
-| Initial qualification | Score opportunity fit and readiness                                      |
-| Technical review      | Validate service scope, capability, dependencies, and delivery risks     |
-| Proposal decision     | Recommend proceed, proceed with conditions, clarify, escalate, or no-go  |
-| Proposal development  | Capture assumptions, exclusions, clarification questions, and SOW inputs |
-| Management approval   | Submit the assessment for approval or revision                           |
-| PO / sales order      | Use approved scope, risks, and assumptions as reference                  |
+The DQE prototype is intended to complement the BD process flow by acting as a
+structured qualification checkpoint during the tender/RFP stage. It helps BD and
+solutioning teams assess technical fit, commercial readiness, delivery risk, and
+proposal readiness before committing effort. Once an opportunity proceeds, the
+approved DQE assessment can be used as a reference for proposal development, PO
+processing, and sales order handover.
+
+| BD stage              | DQE role                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------- |
+| Tender / RFP Received | Create DQE opportunity intake                                                         |
+| Initial qualification | Check basic commercial and technical fit                                              |
+| Technical review      | Validate service scope, capability, dependencies, and delivery risks                  |
+| Proposal decision     | Recommend proceed, proceed with conditions, clarify, escalate, or no-go               |
+| Proposal development  | Capture assumptions, exclusions, clarification questions, and SOW inputs              |
+| Management approval   | Submit the assessment for approval or revision                                        |
+| PO / SO reference     | Use approved scope, risks, assumptions, and qualification record as handover evidence |
 
 This makes DQE complementary to the BD framework rather than a separate
 standalone tool.

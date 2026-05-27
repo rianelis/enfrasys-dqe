@@ -100,7 +100,16 @@ const requiredOverviewFields: Array<keyof DqeInput["overview"]> = ["customer", "
 
 const selectOptions = {
   contactRole: ["CIO/CTO", "IT Director", "IT Manager", "Procurement Officer", "Project Manager", "C-Suite (non-IT)", "End User"],
-  stage: ["Initial Enquiry", "RFP/ITT Received", "Proof of Concept", "Active Negotiation", "Verbal Agreement"],
+  opportunityType: ["Tender / RFP", "Direct Proposal", "Renewal / Expansion", "PO / SO Follow-up", "Internal Evaluation"],
+  stage: [
+    "Tender / RFP Received",
+    "Initial Qualification",
+    "Technical Review",
+    "Proposal Decision",
+    "Proposal Development",
+    "Management Approval",
+    "PO / Sales Order Reference"
+  ],
   dealValue: ["Below RM 100K", "RM 100K - RM 500K", "RM 500K - RM 1M", "RM 1M - RM 5M", "Above RM 5M"],
   sector: [
     "Government (Federal)",
@@ -116,7 +125,12 @@ const selectOptions = {
     "Other"
   ],
   timeline: ["< 1 month", "1-3 months", "3-6 months", "6-12 months", "> 12 months"],
-  procurementType: ["Open Tender", "Direct Negotiation", "Quotation", "Panel Contract", "Framework Agreement", "MyCloud / LAKSANA"]
+  procurementType: ["Open Tender", "Direct Negotiation", "Quotation", "Panel Contract", "Framework Agreement", "MyCloud / LAKSANA"],
+  yesNoUnknown: ["Unknown", "Yes", "No"],
+  partnerDependency: ["Low", "Medium", "High"],
+  marginConfidence: ["Low", "Medium", "High"],
+  winProbability: ["Low", "Medium", "High"],
+  proposalStatus: ["Qualification", "Clarification", "Drafting", "Review", "Submitted", "Awarded / PO", "Closed / No-Go"]
 };
 
 const newAssessmentInput: DqeInput = {
@@ -126,11 +140,22 @@ const newAssessmentInput: DqeInput = {
     customer: "",
     opportunity: "",
     owner: "",
+    bdOwner: "",
+    solutionOwner: "",
     contactName: "",
+    opportunityType: "Tender / RFP",
     dealValue: "",
     sector: "",
     timeline: "",
     deadlineDate: "",
+    budgetConfirmed: "Unknown",
+    decisionMakerIdentified: "Unknown",
+    fundingSourceKnown: "Unknown",
+    partnerDependency: "Medium",
+    marginConfidence: "Medium",
+    winProbability: "Medium",
+    proposalStatus: "Qualification",
+    poSoReference: "",
     notes: ""
   }
 };
@@ -483,6 +508,7 @@ function App() {
     doc.text(`Deal Value: ${input.overview.dealValue}`, 112, 50);
     doc.text(`Timeline: ${input.overview.timeline}`, 112, 58);
     doc.text(`Generated: ${new Date().toLocaleString()}`, 112, 66);
+    doc.text(`BD Stage: ${input.overview.stage}`, 112, 74);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(15);
@@ -525,11 +551,22 @@ function App() {
     doc.setFont("helvetica", "normal");
     doc.text(doc.splitTextToSize(result.flags.map((flag) => `- ${flag}`).join("\n"), 180), 14, 28);
     doc.setFont("helvetica", "bold");
-    doc.text("Approval & Sign-off", 14, 116);
+    doc.text("BD & Commercial Qualification", 14, 82);
     doc.setFont("helvetica", "normal");
-    doc.text(`Status: ${approvalStatus}`, 14, 128);
-    doc.text(`Approver: ${approver || "Pending"}`, 14, 136);
-    doc.text(doc.splitTextToSize(`Notes: ${approvalNotes || "None"}`, 180), 14, 144);
+    doc.text(`Opportunity Type: ${input.overview.opportunityType || "Not specified"}`, 14, 94);
+    doc.text(`BD Owner: ${input.overview.bdOwner || input.overview.owner || "Not assigned"}`, 14, 102);
+    doc.text(`Solution Owner: ${input.overview.solutionOwner || "Not assigned"}`, 14, 110);
+    doc.text(`Submission Deadline: ${input.overview.deadlineDate || "Not set"}`, 14, 118);
+    doc.text(`Budget Confirmed: ${input.overview.budgetConfirmed || "Unknown"}`, 112, 94);
+    doc.text(`Decision Maker: ${input.overview.decisionMakerIdentified || "Unknown"}`, 112, 102);
+    doc.text(`Partner Dependency: ${input.overview.partnerDependency || "Unknown"}`, 112, 110);
+    doc.text(`PO/SO Reference: ${input.overview.poSoReference || "Pending"}`, 112, 118);
+    doc.setFont("helvetica", "bold");
+    doc.text("Approval & Sign-off", 14, 146);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Status: ${approvalStatus}`, 14, 158);
+    doc.text(`Approver: ${approver || "Pending"}`, 14, 166);
+    doc.text(doc.splitTextToSize(`Notes: ${approvalNotes || "None"}`, 180), 14, 174);
     doc.line(14, 190, 90, 190);
     doc.line(114, 190, 190, 190);
     doc.text("Solution Architect", 14, 198);
@@ -1018,24 +1055,69 @@ function OverviewStep({
   return (
     <div className="panel-flow">
       <SectionTitle icon={Building2} title="Deal Overview" />
+      <BdProcessAlignment activeStage={input.overview.stage} />
       <div className="form-grid">
         <TextField required label="Customer / Organisation" value={input.overview.customer} onChange={(value) => updateOverview("customer", value)} />
         <TextField label="Opportunity / Project" value={input.overview.opportunity} onChange={(value) => updateOverview("opportunity", value)} />
         <TextField required label="Owner" value={input.overview.owner} onChange={(value) => updateOverview("owner", value)} />
+        <TextField label="BD Owner" value={input.overview.bdOwner} onChange={(value) => updateOverview("bdOwner", value)} />
+        <TextField label="Solution Owner" value={input.overview.solutionOwner} onChange={(value) => updateOverview("solutionOwner", value)} />
         <TextField label="Primary Contact" value={input.overview.contactName} onChange={(value) => updateOverview("contactName", value)} />
         <SelectField label="Contact Role" value={input.overview.contactRole} options={selectOptions.contactRole} onChange={(value) => updateOverview("contactRole", value)} />
-        <SelectField label="Deal Stage" value={input.overview.stage} options={selectOptions.stage} onChange={(value) => updateOverview("stage", value)} />
+        <SelectField label="Opportunity Type" value={input.overview.opportunityType} options={selectOptions.opportunityType} onChange={(value) => updateOverview("opportunityType", value)} />
+        <SelectField label="BD Stage" value={input.overview.stage} options={selectOptions.stage} onChange={(value) => updateOverview("stage", value)} />
         <SelectField required label="Deal Value" value={input.overview.dealValue} options={selectOptions.dealValue} onChange={(value) => updateOverview("dealValue", value)} />
         <SelectField required label="Sector" value={input.overview.sector} options={selectOptions.sector} onChange={(value) => updateOverview("sector", value)} />
         <SelectField required label="Timeline" value={input.overview.timeline} options={selectOptions.timeline} onChange={(value) => updateOverview("timeline", value)} />
         <SelectField label="Procurement Type" value={input.overview.procurementType} options={selectOptions.procurementType} onChange={(value) => updateOverview("procurementType", value)} />
-        <TextField label="Submission Date" type="date" value={input.overview.deadlineDate} onChange={(value) => updateOverview("deadlineDate", value)} />
+        <TextField label="Submission Deadline" type="date" value={input.overview.deadlineDate} onChange={(value) => updateOverview("deadlineDate", value)} />
+        <SelectField label="Budget Confirmed" value={input.overview.budgetConfirmed} options={selectOptions.yesNoUnknown} onChange={(value) => updateOverview("budgetConfirmed", value)} />
+        <SelectField label="Decision Maker Identified" value={input.overview.decisionMakerIdentified} options={selectOptions.yesNoUnknown} onChange={(value) => updateOverview("decisionMakerIdentified", value)} />
+        <SelectField label="Funding Source Known" value={input.overview.fundingSourceKnown} options={selectOptions.yesNoUnknown} onChange={(value) => updateOverview("fundingSourceKnown", value)} />
+        <SelectField label="Partner Dependency" value={input.overview.partnerDependency} options={selectOptions.partnerDependency} onChange={(value) => updateOverview("partnerDependency", value)} />
+        <SelectField label="Margin Confidence" value={input.overview.marginConfidence} options={selectOptions.marginConfidence} onChange={(value) => updateOverview("marginConfidence", value)} />
+        <SelectField label="Win Probability" value={input.overview.winProbability} options={selectOptions.winProbability} onChange={(value) => updateOverview("winProbability", value)} />
+        <SelectField label="Proposal Status" value={input.overview.proposalStatus} options={selectOptions.proposalStatus} onChange={(value) => updateOverview("proposalStatus", value)} />
+        <TextField label="PO/SO Reference" value={input.overview.poSoReference} onChange={(value) => updateOverview("poSoReference", value)} />
       </div>
       <label className="field wide">
-        <span>Technical Requirements & Notes</span>
+        <span>Requirements, Assumptions, Exclusions & Clarifications</span>
         <textarea value={input.overview.notes} onChange={(event) => updateOverview("notes", event.target.value)} rows={5} />
       </label>
     </div>
+  );
+}
+
+function BdProcessAlignment({ activeStage }: { activeStage: string }) {
+  const stages = [
+    "Tender / RFP Received",
+    "DQE Opportunity Intake",
+    "Technical + Commercial Qualification",
+    "Risk Assessment",
+    "Proposal Decision",
+    "Proposal Development",
+    "Management Approval",
+    "PO / Sales Order Reference"
+  ];
+  const activeIndex = Math.max(
+    0,
+    stages.findIndex((stage) => activeStage === stage || (activeStage === "Initial Qualification" && stage === "Technical + Commercial Qualification") || (activeStage === "Technical Review" && stage === "Technical + Commercial Qualification"))
+  );
+
+  return (
+    <section className="bd-flow" aria-label="BD process alignment">
+      <div>
+        <strong>BD Process Alignment</strong>
+        <p>DQE acts as the qualification checkpoint between tender/RFP intake, technical/commercial review, proposal readiness, approval, and PO/SO handover.</p>
+      </div>
+      <div className="bd-flow-steps">
+        {stages.map((stage, index) => (
+          <span className={index <= activeIndex ? "active" : ""} key={stage}>
+            {stage}
+          </span>
+        ))}
+      </div>
+    </section>
   );
 }
 
