@@ -97,6 +97,17 @@ type AssessmentRecord = {
 const serviceGroups: ServiceGroup[] = ["cloud", "appIntegration", "dataAi", "security", "industry", "managedAdvisory"];
 const riskGroups: RiskGroup[] = ["development", "time", "operations"];
 const requiredOverviewFields: Array<keyof DqeInput["overview"]> = ["customer", "owner", "dealValue", "sector", "timeline"];
+const recommendedWorkflow = [
+  { step: "Dashboard", outcome: "Open an existing deal or start a new qualification." },
+  { step: "New Assessment", outcome: "Create a fresh Tender / RFP qualification record." },
+  { step: "Overview", outcome: "Capture BD owner, customer, value, deadline, budget, and status." },
+  { step: "Service Scope", outcome: "Select the Enfrasys services needed for the opportunity." },
+  { step: "Capability", outcome: "Score readiness for skills, tools, and delivery experience." },
+  { step: "Risk", outcome: "Rate development, time, and operations risk from 1 to 5." },
+  { step: "Score", outcome: "Review decision, top risks, recommendation, and approval status." },
+  { step: "AI Recommendation", outcome: "Generate proposal guidance, mitigation points, and next action." },
+  { step: "Save / Export / Approval", outcome: "Autosave, download the report, or submit for review." }
+];
 
 const selectOptions = {
   contactRole: ["CIO/CTO", "IT Director", "IT Manager", "Procurement Officer", "Project Manager", "C-Suite (non-IT)", "End User"],
@@ -847,6 +858,24 @@ function HelpStep({ onStart }: { onStart: () => void }) {
         </button>
       </section>
 
+      <section className="workflow-guide" aria-label="Recommended DQE workflow">
+        <div className="workflow-guide-header">
+          <span>Recommended workflow</span>
+          <strong>Dashboard to approval, in one guided path</strong>
+        </div>
+        <div className="workflow-steps">
+          {recommendedWorkflow.map((item, index) => (
+            <article key={item.step}>
+              <b>{String(index + 1).padStart(2, "0")}</b>
+              <div>
+                <strong>{item.step}</strong>
+                <p>{item.outcome}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <div className="help-grid">
         <article className="help-card">
           <span>1</span>
@@ -943,8 +972,10 @@ function HelpStep({ onStart }: { onStart: () => void }) {
       </div>
 
       <section className="help-callout">
-        <strong>Recommended workflow</strong>
-        <p>Dashboard &gt; New Assessment &gt; Overview &gt; Service Scope &gt; Capability &gt; Risk &gt; Score &gt; Generate AI Recommendation &gt; Save / Export / Submit for approval.</p>
+        <strong>What good looks like</strong>
+        <p>
+          A completed assessment has enough BD and technical context to justify the recommendation, explain the top risks, support proposal preparation, and provide an approval or PDF evidence trail.
+        </p>
       </section>
     </div>
   );
@@ -1641,6 +1672,13 @@ function HelpSummaryPanel({ onStart }: { onStart: () => void }) {
         <span>Timeline is realistic</span>
         <span>Required services are selected</span>
         <span>Key risks are scored honestly</span>
+      </div>
+      <div className="mini-workflow">
+        <strong>Workflow</strong>
+        {recommendedWorkflow.slice(0, 7).map((item) => (
+          <span key={item.step}>{item.step}</span>
+        ))}
+        <small>Then generate AI guidance, export, or submit for approval.</small>
       </div>
       <button className="primary-action summary-action" onClick={onStart} type="button">
         <Plus size={16} aria-hidden="true" />

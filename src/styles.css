@@ -528,6 +528,71 @@ h1 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.workflow-guide {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.workflow-guide-header {
+  display: grid;
+  gap: 4px;
+}
+
+.workflow-guide-header span {
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.workflow-guide-header strong {
+  font-size: 18px;
+}
+
+.workflow-steps {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.workflow-steps article {
+  align-items: start;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 96px;
+  padding: 12px;
+}
+
+.workflow-steps b {
+  align-items: center;
+  background: var(--rail);
+  border-radius: 7px;
+  color: #ffffff;
+  display: flex;
+  font-size: 12px;
+  height: 28px;
+  justify-content: center;
+  width: 34px;
+}
+
+.workflow-steps strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.workflow-steps p {
+  color: var(--muted);
+  margin: 0;
+}
+
 .help-card {
   background: #ffffff;
   border: 1px solid var(--line);
@@ -592,6 +657,38 @@ h1 {
 
 .help-checklist span {
   border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+.mini-workflow {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+
+.mini-workflow span {
+  color: var(--muted);
+  padding-left: 14px;
+  position: relative;
+}
+
+.mini-workflow span::before {
+  background: var(--accent-strong);
+  border-radius: 999px;
+  content: "";
+  height: 5px;
+  left: 0;
+  position: absolute;
+  top: 8px;
+  width: 5px;
+}
+
+.mini-workflow small {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
   padding-top: 8px;
 }
 
@@ -1553,6 +1650,10 @@ h1 {
     grid-template-columns: 1fr;
   }
 
+  .workflow-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .result-panel {
     position: static;
   }
@@ -1598,17 +1699,18 @@ h1 {
 
   .form-grid,
   .bd-flow-steps,
-  .metric-grid {
+  .metric-grid,
+  .workflow-steps {
     grid-template-columns: 1fr;
   }
 
   .score-row,
   .risk-row,
   .setting-row,
-    .dashboard-filters,
-    .help-intro,
-    .help-grid,
-    .hero-block,
+  .dashboard-filters,
+  .help-intro,
+  .help-grid,
+  .hero-block,
   .missing-grid,
   .executive-result,
   .exec-grid,
