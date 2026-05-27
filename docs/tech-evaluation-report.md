@@ -119,6 +119,22 @@ Demo flow:
 6. Submit for approval.
 7. Export the PDF report.
 
+## Screenshots And Evidence
+
+The repository includes the following evidence pack:
+
+| File | Purpose |
+| --- | --- |
+| `screenshots/01-dashboard.png` | Shows assessment dashboard |
+| `screenshots/02-overview.png` | Shows opportunity intake |
+| `screenshots/03-service-scope.png` | Shows selected services |
+| `screenshots/04-capability.png` | Shows capability scoring |
+| `screenshots/05-risk-matrix.png` | Shows risk scoring |
+| `screenshots/06-score.png` | Shows recommendation |
+| `screenshots/07-pdf-export.png` | Shows PDF export action |
+| `screenshots/08-admin.png` | Shows configurable scoring/admin |
+| `screenshots/dqe-demo-report.pdf` | Exported demo report evidence |
+
 ## Limitations
 
 Current limitations:
@@ -127,23 +143,20 @@ Current limitations:
 - Commercial qualification factors are not fully scored yet.
 - AI recommendation is basic and should be expanded using internal knowledge.
 - Role-based access control is not yet implemented.
-- Screenshots and demo evidence pack still need to be added.
 - BD process alignment is documented but not yet embedded as a full workflow module.
 
 ## Roadmap
 
 Recommended next phase:
 
-1. Add screenshots for dashboard, overview, service scope, capability, risk, score, PDF export, and admin.
-2. Add one completed demo assessment and exported PDF as evidence.
-3. Expand the service catalogue for Enfrasys internal offerings:
+1. Expand the service catalogue for Enfrasys internal offerings:
    - AI / GenAI Solutioning.
    - Microsoft Fabric / Data Platform.
    - Application Modernisation.
    - Integration / API / Middleware.
    - VMS / Smart City / IoT.
    - Managed Services / Support Model.
-4. Add commercial qualification scoring:
+2. Add commercial qualification scoring:
    - Budget confirmed.
    - Decision maker identified.
    - Funding source known.
@@ -152,14 +165,13 @@ Recommended next phase:
    - Margin confidence.
    - Submission effort required.
    - Win probability.
-5. Make the service catalogue editable through admin configuration.
-6. Add role-based access for admins, owners, and approvers.
-7. Add RAG-based proposal assistant using internal templates, service descriptions, assumptions, exclusions, and BD guidebook content.
-8. Improve executive PDF report layout with Enfrasys branding, charts, metadata, and approval/signature section.
+3. Make the service catalogue editable through admin configuration.
+4. Add role-based access for admins, owners, and approvers.
+5. Add RAG-based proposal assistant using internal templates, service descriptions, assumptions, exclusions, and BD guidebook content.
+6. Improve executive PDF report layout with Enfrasys branding, charts, metadata, and approval/signature section.
 
 ## Final Assessment
 
 DQE is already a credible functional prototype. It demonstrates the core engine, workflow, scoring, persistence, approval, reporting, and deployment foundation required for the prototype deliverable.
 
-The remaining gap for the 6 June deliverable is presentation evidence: README, report, screenshots, and one realistic demo case. This report and the repository README address the documentation gap and position the prototype clearly against the Transformation KPI.
-
+The remaining improvement areas are deeper BD commercial scoring, editable service catalogue governance, and richer AI-assisted proposal support. The README, report, screenshots, and demo evidence now position the prototype clearly against the Transformation KPI.

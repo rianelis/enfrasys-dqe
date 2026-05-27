@@ -1,0 +1,549 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 5086
+>>
+stream
+0.5670000000000001 w
+0 G
+0.06 0.14 0.11 rg
+0. 841.8899999999999864 595.2755905511811534 -85.0393700787401627 re
+f
+0.94 0.79 0.37 rg
+39.6850393700787407 816.3781889763779418 34.0157480314960665 -34.0157480314960665 re
+f
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.063 0.137 0.11 rg
+51.0236220472441033 793.7010236220472734 Td
+(E) Tj
+ET
+BT
+/F2 17 Tf
+19.5499999999999972 TL
+1. g
+90.708661417322844 793.7010236220472734 Td
+(Enfrasys Deal Qualification Report) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 722.8348818897637784 Td
+(Customer: Kementerian Kewangan Malaysia) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 700.15771653543311 Td
+(Opportunity: Cloud Migration Phase 1) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 677.480551181102328 Td
+(Owner: Presales Team) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 654.8033858267716596 Td
+(Approval: Draft) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 632.1262204724408775 Td
+(Version: DQE 0.1) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+317.4803149606299257 722.8348818897637784 Td
+(Sector: Government \(Federal\)) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+317.4803149606299257 700.15771653543311 Td
+(Deal Value: RM 500K - RM 1M) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+317.4803149606299257 677.480551181102328 Td
+(Timeline: 3-6 months) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+317.4803149606299257 654.8033858267716596 Td
+(Generated: 27/05/2026, 10:05:34 pm) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 603.7797637795274568 Td
+(Decision: Proceed With Caution) Tj
+ET
+BT
+/F2 15 Tf
+17.25 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 575.4333070866141497 Td
+(Weighted Risk Score: 2.51) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 547.086850393700729 Td
+(Selected Services: 8) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 524.4096850393700606 Td
+(Capability Score: 3.67) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 479.0553543307086102 Td
+(Risk Breakdown) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 445.0396062992125508 Td
+(Development Risk: 2.25 \(35%\)) Tj
+ET
+0.93 0.95 0.93 rg
+317.4803149606299257 456.378188976377885 198.4251968503937178 -11.3385826771653555 re
+f
+0.66 0.4 0.07 rg
+317.4803149606299257 456.378188976377885 89.2913385826771702 -11.3385826771653555 re
+f
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 416.69314960629913 Td
+(Time Risk: 2.75 \(35%\)) Tj
+ET
+0.93 0.95 0.93 rg
+317.4803149606299257 428.0317322834645211 198.4251968503937178 -11.3385826771653555 re
+f
+0.66 0.4 0.07 rg
+317.4803149606299257 428.0317322834645211 109.1338582677165476 -11.3385826771653555 re
+f
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 388.3466929133857661 Td
+(Operations Risk: 2.50 \(30%\)) Tj
+ET
+0.93 0.95 0.93 rg
+317.4803149606299257 399.6852755905511003 198.4251968503937178 -11.3385826771653555 re
+f
+0.66 0.4 0.07 rg
+317.4803149606299257 399.6852755905511003 99.2125984251968589 -11.3385826771653555 re
+f
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 360.0002362204724022 Td
+(Capability Score: 3.67 \(alignment\)) Tj
+ET
+0.93 0.95 0.93 rg
+317.4803149606299257 371.3388188976377364 198.4251968503937178 -11.3385826771653555 re
+f
+0.12 0.48 0.3 rg
+317.4803149606299257 371.3388188976377364 145.6440944881889834 -11.3385826771653555 re
+f
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 314.6459055118109518 Td
+(Score Explanation) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 286.2994488188975311 Td
+(- Score is controlled because no individual risk factor is currently marked high-risk.) Tj
+T* (- Time Risk is the largest risk driver at 2.75.) Tj
+T* (- Capability alignment is helping offset delivery risk with an overall score of 3.67.) Tj
+T* (- Development Risk has the strongest weighting at 35%.) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 189.9214960629919915 Td
+(Recommendation) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 161.5750393700786844 Td
+(Proceed with caution: address flagged risks before committing, confirm delivery capacity, secure) Tj
+T* (management sign-off on SLA commitments, and add a 15-20% contingency buffer. Deal notes indicate:) Tj
+T* (Top requirements: Azure migration, security baseline, managed support readiness. This can later be) Tj
+T* (replaced or augmented with AI-generated narrative using the same structured inputs.) Tj
+ET
+0.84 0.87 0.85 RG
+39.6850393700787407 42.5199212598424126 m
+555.5905511811024553 42.5199212598424126 l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.4 0.451 0.42 rg
+39.6850393700787407 25.5120472440943331 Td
+(Enfrasys DQE - v0.1 - Page 1 of 2) Tj
+ET
+endstream
+endobj
+5 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 6 0 R
+>>
+endobj
+6 0 obj
+<<
+/Length 1687
+>>
+stream
+0.5670000000000001 w
+0 G
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 790.8663779527558972 Td
+(Risk Flags) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 762.5199212598424765 Td
+(- Skill gap risk is within acceptable range.) Tj
+T* (- Deadline risk is manageable.) Tj
+T* (- Resource availability is adequate.) Tj
+T* (- SLA commitments are feasible.) Tj
+T* (- Customer IT maturity is manageable.) Tj
+T* (- Capability level is sufficient for this deal.) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 513.0711023622046696 Td
+(Approval & Sign-off) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 479.0553543307086102 Td
+(Status: Draft) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 456.378188976377885 Td
+(Approver: Pending) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 433.7010236220471597 Td
+(Notes: None) Tj
+ET
+39.6850393700787407 303.3073228346455608 m
+255.1181102362205024 303.3073228346455608 l
+S
+323.1496062992126213 303.3073228346455608 m
+538.5826771653544256 303.3073228346455608 l
+S
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+39.6850393700787407 280.6301574803148924 Td
+(Solution Architect) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.09 0.129 0.11 rg
+323.1496062992126213 280.6301574803148924 Td
+(Management Approver) Tj
+ET
+0.84 0.87 0.85 RG
+39.6850393700787407 42.5199212598424126 m
+555.5905511811024553 42.5199212598424126 l
+S
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.4 0.451 0.42 rg
+39.6850393700787407 25.5120472440943331 Td
+(Enfrasys DQE - v0.1 - Page 2 of 2) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R 5 0 R ]
+/Count 2
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+19 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+20 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 7 0 R
+/F2 8 0 R
+/F3 9 0 R
+/F4 10 0 R
+/F5 11 0 R
+/F6 12 0 R
+/F7 13 0 R
+/F8 14 0 R
+/F9 15 0 R
+/F10 16 0 R
+/F11 17 0 R
+/F12 18 0 R
+/F13 19 0 R
+/F14 20 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+21 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/Title (DQE Report - Cloud Migration Phase 1)
+/Subject (Enfrasys Deal Qualification Engine report)
+/Author (Enfrasys DQE)
+/Creator (Enfrasys DQE)
+/CreationDate (D:20260527220534+08'00')
+>>
+endobj
+22 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 23
+0000000000 65535 f 
+0000007166 00000 n 
+0000008991 00000 n 
+0000000015 00000 n 
+0000000152 00000 n 
+0000005290 00000 n 
+0000005427 00000 n 
+0000007229 00000 n 
+0000007354 00000 n 
+0000007484 00000 n 
+0000007617 00000 n 
+0000007755 00000 n 
+0000007879 00000 n 
+0000008008 00000 n 
+0000008140 00000 n 
+0000008276 00000 n 
+0000008404 00000 n 
+0000008531 00000 n 
+0000008660 00000 n 
+0000008793 00000 n 
+0000008895 00000 n 
+0000009241 00000 n 
+0000009473 00000 n 
+trailer
+<<
+/Size 23
+/Root 22 0 R
+/Info 21 0 R
+/ID [ <B5B41F22C4F31B727D3AD83FA2803B04> <B5B41F22C4F31B727D3AD83FA2803B04> ]
+>>
+startxref
+9577
+%%EOF

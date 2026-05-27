@@ -138,11 +138,26 @@ Example demo case:
 
 Use the demo case to create an assessment, review the score, submit for approval, and export the PDF report.
 
+## Screenshots And Evidence
+
+The repository includes a screenshot evidence pack:
+
+| File | Purpose |
+| --- | --- |
+| `screenshots/01-dashboard.png` | Shows assessment dashboard |
+| `screenshots/02-overview.png` | Shows opportunity intake |
+| `screenshots/03-service-scope.png` | Shows selected services |
+| `screenshots/04-capability.png` | Shows capability scoring |
+| `screenshots/05-risk-matrix.png` | Shows risk scoring |
+| `screenshots/06-score.png` | Shows recommendation |
+| `screenshots/07-pdf-export.png` | Shows PDF export action |
+| `screenshots/08-admin.png` | Shows configurable scoring/admin |
+| `screenshots/dqe-demo-report.pdf` | Exported demo report evidence |
+
 ## Roadmap
 
 Recommended next improvements:
 
-- Add screenshots and demo evidence pack.
 - Expand service catalogue with Enfrasys-specific offerings such as AI / GenAI Solutioning, Microsoft Fabric / Data Platform, Application Modernisation, Integration / API / Middleware, VMS / Smart City / IoT, and Managed Services / Support Model.
 - Add commercial qualification scoring including budget confirmation, decision maker, funding source, strategic account value, partner dependency, margin confidence, submission effort, and win probability.
 - Make the service catalogue fully editable as admin data.
@@ -157,4 +172,3 @@ The supporting evaluation report is available at:
 ```text
 docs/tech-evaluation-report.md
 ```
-
