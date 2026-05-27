@@ -153,6 +153,7 @@ The repository includes a screenshot evidence pack:
 | `screenshots/07-pdf-export.png` | Shows PDF export action |
 | `screenshots/08-admin.png` | Shows configurable scoring/admin |
 | `screenshots/dqe-demo-report.pdf` | Exported demo report evidence |
+| `demo-output/prolintas-tcs-cloud-modernisation-dqe-report.pdf` | Exported Prolintas demo assessment report |
 
 ## Roadmap
 
