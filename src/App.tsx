@@ -110,7 +110,18 @@ const selectOptions = {
     "Management Approval",
     "PO / Sales Order Reference"
   ],
-  dealValue: ["Below RM 100K", "RM 100K - RM 500K", "RM 500K - RM 1M", "RM 1M - RM 5M", "Above RM 5M"],
+  dealValue: [
+    "Below RM 100K",
+    "RM 100K - RM 500K",
+    "RM 500K - RM 1M",
+    "RM 1M - RM 5M",
+    "RM 5M - RM 20M",
+    "RM 20M - RM 50M",
+    "RM 50M - RM 100M",
+    "RM 100M - RM 250M",
+    "RM 250M - RM 400M",
+    "Above RM 400M"
+  ],
   sector: [
     "Government (Federal)",
     "Government (State/Local)",

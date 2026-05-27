@@ -433,7 +433,7 @@ export const defaultOverview: DealOverview = {
   contactRole: "IT Director",
   opportunityType: "Tender / RFP",
   stage: "RFP/ITT Received",
-  dealValue: "RM 500K - RM 1M",
+  dealValue: "RM 5M - RM 20M",
   sector: "Government (Federal)",
   timeline: "3-6 months",
   procurementType: "Open Tender",
