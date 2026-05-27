@@ -1,0 +1,10 @@
+node_modules/
+dist/
+server/data/
+*.log
+.env
+.env.*
+!.env.example
+dqe-*.png
+playwright-report/
+test-results/

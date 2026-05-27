@@ -1,0 +1,12 @@
+node_modules
+dist
+server/data
+.git
+.gitignore
+*.log
+.env
+.env.*
+dqe-*.png
+playwright-report
+test-results
+Enfrasys_Deal_Qualification_Framework_improved.xlsx
