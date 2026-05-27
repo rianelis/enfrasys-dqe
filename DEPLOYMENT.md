@@ -70,8 +70,8 @@ It also creates `app_settings` for server-side admin configuration.
 Set these environment variables on the Container App to enable AI-assisted recommendations:
 
 ```powershell
-az containerapp secret set --name enfrasys-dqe --resource-group rg-enfrasys-dqe --secrets openai-api-key=<your-key>
-az containerapp update --name enfrasys-dqe --resource-group rg-enfrasys-dqe --set-env-vars OPENAI_API_KEY=secretref:openai-api-key OPENAI_MODEL=gpt-5.2
+az containerapp secret set --name enfrasys-dqe --resource-group rg-enfrasys-dqe --secrets gemini-api-key=<your-key>
+az containerapp update --name enfrasys-dqe --resource-group rg-enfrasys-dqe --set-env-vars GEMINI_API_KEY=secretref:gemini-api-key GEMINI_MODEL=gemini-2.5-flash
 ```
 
-Without `OPENAI_API_KEY`, DQE uses its deterministic recommendation fallback.
+Without `GEMINI_API_KEY`, DQE uses its deterministic recommendation fallback.
