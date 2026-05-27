@@ -1270,22 +1270,85 @@ h1 {
   border: 1px solid var(--line);
   border-radius: 8px;
   display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
   padding: 16px;
 }
 
-.service-admin-list > strong {
-  grid-column: 1 / -1;
+.catalogue-heading {
+  display: grid;
+  gap: 4px;
+}
+
+.catalogue-heading > strong {
+  font-size: 18px;
+}
+
+.catalogue-heading span,
+.catalogue-group-heading span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.catalogue-group {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.catalogue-group-heading {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.catalogue-group-heading strong {
+  font-size: 15px;
+}
+
+.catalogue-services {
+  display: grid;
+  gap: 10px;
 }
 
 .service-admin-list article {
-  background: #f3f6f0;
+  background: #f8faf6;
   border: 1px solid var(--line);
   border-radius: 7px;
   display: grid;
   gap: 8px;
-  padding: 12px;
+  padding: 12px 14px;
+}
+
+.catalogue-service-title {
+  align-items: start;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.catalogue-service-title strong {
+  line-height: 1.25;
+}
+
+.scope-pill {
+  background: #edf2ef;
+  border: 1px solid #d3ded7;
+  border-radius: 999px;
+  color: var(--muted);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 3px 8px;
+}
+
+.scope-pill.required {
+  background: #e9f6ee;
+  border-color: #b9dcc6;
+  color: var(--green);
 }
 
 .service-admin-list small,
@@ -1301,7 +1364,7 @@ h1 {
 .service-admin-list dl {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: 0;
 }
 

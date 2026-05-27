@@ -1314,27 +1314,44 @@ function AdminSettings({
         />
       </label>
       <div className="service-admin-list">
-        <strong>Service Catalogue</strong>
-        {services.map((service) => (
-          <article key={service.id}>
-            <div>
-              <strong>{service.name}</strong>
-              <small>{groupLabels[service.group]}</small>
+        <div className="catalogue-heading">
+          <strong>Service Catalogue</strong>
+          <span>{services.length} Enfrasys portfolio services. Read-only in this prototype; editable admin catalogue is the next phase.</span>
+        </div>
+        {serviceGroups.map((group) => (
+          <section className="catalogue-group" key={group}>
+            <div className="catalogue-group-heading">
+              <strong>{groupLabels[group]}</strong>
+              <span>{services.filter((service) => service.group === group).length} services</span>
             </div>
-            <p>{service.description}</p>
-            <dl>
-              <div>
-                <dt>Default</dt>
-                <dd>{service.defaultRequired ? "In scope" : "Optional"}</dd>
-              </div>
-              <div>
-                <dt>Capability</dt>
-                <dd>
-                  S{service.defaultCapability.skills} / T{service.defaultCapability.tools} / E{service.defaultCapability.experience}
-                </dd>
-              </div>
-            </dl>
-          </article>
+            <div className="catalogue-services">
+              {services
+                .filter((service) => service.group === group)
+                .map((service) => (
+                  <article key={service.id}>
+                    <div className="catalogue-service-title">
+                      <strong>{service.name}</strong>
+                      <span className={service.defaultRequired ? "scope-pill required" : "scope-pill"}>{service.defaultRequired ? "Default in scope" : "Optional"}</span>
+                    </div>
+                    <p>{service.description}</p>
+                    <dl>
+                      <div>
+                        <dt>Skills</dt>
+                        <dd>{service.defaultCapability.skills}/5</dd>
+                      </div>
+                      <div>
+                        <dt>Tools</dt>
+                        <dd>{service.defaultCapability.tools}/5</dd>
+                      </div>
+                      <div>
+                        <dt>Experience</dt>
+                        <dd>{service.defaultCapability.experience}/5</dd>
+                      </div>
+                    </dl>
+                  </article>
+                ))}
+            </div>
+          </section>
         ))}
       </div>
       <button className="primary-action config-action" onClick={onApply} type="button">
