@@ -33,6 +33,7 @@ import {
   DqeInput,
   DqeResult,
   groupLabels,
+  microsoftPartnerServiceIds,
   RiskGroup,
   riskFactors,
   ScoreThresholds,
@@ -102,7 +103,7 @@ const recommendedWorkflow = [
   { step: "New Assessment", outcome: "Create a fresh Tender / RFP qualification record." },
   { step: "Overview", outcome: "Capture BD owner, customer, value, deadline, budget, and status." },
   { step: "Service Scope", outcome: "Select the Enfrasys services needed for the opportunity." },
-  { step: "Capability", outcome: "Score readiness for skills, tools, and delivery experience." },
+  { step: "Capability", outcome: "Confirm Microsoft partner readiness and delivery experience." },
   { step: "Risk", outcome: "Rate development, time, and operations risk from 1 to 5." },
   { step: "Score", outcome: "Review decision, top risks, recommendation, and approval status." },
   { step: "AI Recommendation", outcome: "Generate proposal guidance, mitigation points, and next action." },
@@ -908,7 +909,7 @@ function HelpStep({ onStart }: { onStart: () => void }) {
           <p>Rate readiness for each selected service. Use the sliders as a practical presales confidence check.</p>
           <ul>
             <li>Skills: team knowledge and certifications.</li>
-            <li>Tools: available accelerators, platforms, and templates.</li>
+            <li>Platform: Microsoft services, accelerators, templates, and delivery tooling.</li>
             <li>Experience: similar delivery history or references.</li>
           </ul>
         </article>
@@ -1210,25 +1211,65 @@ function CapabilityStep({
   updateCapability: (serviceId: string, key: keyof DqeInput["capability"][string], value: number) => void;
 }) {
   const selectedServices = services.filter((service) => input.requiredServices[service.id]);
+  const microsoftAlignedCount = selectedServices.filter((service) => microsoftPartnerServiceIds.has(service.id)).length;
+  const capabilityAverage =
+    selectedServices.length === 0
+      ? null
+      : selectedServices.reduce((sum, service) => {
+          const score = input.capability[service.id] ?? service.defaultCapability;
+          return sum + (score.skills + score.tools + score.experience) / 3;
+        }, 0) / selectedServices.length;
 
   return (
     <div className="panel-flow">
-      <SectionTitle icon={SlidersHorizontal} title="Capability Match" />
+      <SectionTitle icon={SlidersHorizontal} title="Microsoft Capability Match" />
+      <section className="capability-hero">
+        <div>
+          <strong>Start from Enfrasys Microsoft partner strengths, then adjust for the real deal.</strong>
+          <p>
+            Azure, Microsoft 365, Defender, Fabric, Power Platform, data, AI, and managed services now use stronger default readiness because these are core Microsoft-aligned offerings. Lower the sliders only when this opportunity has unusual scope, delivery constraints, or specialist dependency.
+          </p>
+        </div>
+        <div className="capability-metrics" aria-label="Capability summary">
+          <span>
+            <b>{selectedServices.length}</b>
+            selected services
+          </span>
+          <span>
+            <b>{microsoftAlignedCount}</b>
+            Microsoft-aligned
+          </span>
+          <span>
+            <b>{capabilityAverage === null ? "N/A" : capabilityAverage.toFixed(2)}</b>
+            average readiness
+          </span>
+        </div>
+      </section>
       <div className="slider-table">
         {selectedServices.map((service) => {
           const score = input.capability[service.id];
+          const isMicrosoftAligned = microsoftPartnerServiceIds.has(service.id);
           return (
-            <div className="score-row" key={service.id}>
+            <div className={isMicrosoftAligned ? "score-row partner-ready" : "score-row"} key={service.id}>
               <div>
-                <strong>{service.name}</strong>
+                <div className="capability-title">
+                  <strong>{service.name}</strong>
+                  {isMicrosoftAligned && <span>Microsoft partner baseline</span>}
+                </div>
                 <small>{service.description}</small>
               </div>
               <Slider label="Skills" value={score.skills} onChange={(value) => updateCapability(service.id, "skills", value)} />
-              <Slider label="Tools" value={score.tools} onChange={(value) => updateCapability(service.id, "tools", value)} />
+              <Slider label="Platform" value={score.tools} onChange={(value) => updateCapability(service.id, "tools", value)} />
               <Slider label="Experience" value={score.experience} onChange={(value) => updateCapability(service.id, "experience", value)} />
             </div>
           );
         })}
+        {selectedServices.length === 0 && (
+          <div className="empty-capability">
+            <strong>No services selected yet.</strong>
+            <span>Go to Service Scope and choose the Microsoft or Enfrasys offerings required for this opportunity.</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1382,7 +1423,7 @@ function AdminSettings({
                         <dd>{service.defaultCapability.skills}/5</dd>
                       </div>
                       <div>
-                        <dt>Tools</dt>
+                        <dt>Platform</dt>
                         <dd>{service.defaultCapability.tools}/5</dd>
                       </div>
                       <div>

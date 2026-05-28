@@ -76,6 +76,32 @@ export type ScoreThresholds = {
   amberMax: number;
 };
 
+export const microsoftPartnerServiceIds = new Set([
+  "azureLandingZone",
+  "cloudMigration",
+  "azureInfrastructure",
+  "hybridMultiCloud",
+  "backupDr",
+  "microsoft365",
+  "modernWorkplace",
+  "powerPlatform",
+  "zeroTrust",
+  "endpointProtection",
+  "complianceGovernance",
+  "identityAccess",
+  "socMonitoring",
+  "microsoftFabric",
+  "dataAnalytics",
+  "aiGenAiSolutions",
+  "ragKnowledgeSearch",
+  "biReporting",
+  "managedServices",
+  "assessmentWorkshop",
+  "advisoryStrategy",
+  "trainingAdoption",
+  "finops"
+]);
+
 export const defaultThresholds: ScoreThresholds = {
   greenMax: 2.5,
   amberMax: 3.5
@@ -88,7 +114,7 @@ export const services: Service[] = [
     name: "Azure Landing Zone",
     description: "CAF-aligned subscriptions, identity, network, policy, and governance foundation",
     defaultRequired: true,
-    defaultCapability: { skills: 4, tools: 4, experience: 4 }
+    defaultCapability: { skills: 5, tools: 5, experience: 4 }
   },
   {
     id: "cloudMigration",
@@ -96,7 +122,7 @@ export const services: Service[] = [
     name: "Cloud Migration",
     description: "Lift and shift, re-platform or re-architect to Azure",
     defaultRequired: true,
-    defaultCapability: { skills: 4, tools: 4, experience: 4 }
+    defaultCapability: { skills: 5, tools: 4, experience: 4 }
   },
   {
     id: "azureInfrastructure",
@@ -104,7 +130,7 @@ export const services: Service[] = [
     name: "Azure Infrastructure",
     description: "IaaS, PaaS, VMs, networking, storage on Azure",
     defaultRequired: true,
-    defaultCapability: { skills: 4, tools: 4, experience: 4 }
+    defaultCapability: { skills: 5, tools: 5, experience: 4 }
   },
   {
     id: "hybridMultiCloud",
@@ -112,7 +138,7 @@ export const services: Service[] = [
     name: "Hybrid Connectivity",
     description: "On-premise, Azure Arc, ExpressRoute, VPN, DNS, and network integration",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "backupDr",
@@ -120,7 +146,7 @@ export const services: Service[] = [
     name: "Backup & Disaster Recovery",
     description: "Azure Backup, Site Recovery, business continuity",
     defaultRequired: true,
-    defaultCapability: { skills: 4, tools: 4, experience: 4 }
+    defaultCapability: { skills: 5, tools: 5, experience: 4 }
   },
   {
     id: "microsoft365",
@@ -128,7 +154,7 @@ export const services: Service[] = [
     name: "Microsoft 365",
     description: "Exchange, Teams, SharePoint, OneDrive deployment",
     defaultRequired: false,
-    defaultCapability: { skills: 4, tools: 4, experience: 4 }
+    defaultCapability: { skills: 5, tools: 5, experience: 4 }
   },
   {
     id: "modernWorkplace",
@@ -136,7 +162,7 @@ export const services: Service[] = [
     name: "Modern Workplace",
     description: "Windows 365, AVD, Intune, device management",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "powerPlatform",
@@ -144,7 +170,7 @@ export const services: Service[] = [
     name: "Business Applications",
     description: "Power Platform, workflow automation, reporting apps, and business process tooling",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "appModernization",
@@ -184,7 +210,7 @@ export const services: Service[] = [
     name: "Zero Trust Security",
     description: "Identity, conditional access, MFA, Microsoft Sentinel",
     defaultRequired: true,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "endpointProtection",
@@ -192,7 +218,7 @@ export const services: Service[] = [
     name: "Defender / XDR",
     description: "Microsoft Defender suite, EDR/XDR, threat hunting, and response workflow",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "complianceGovernance",
@@ -200,7 +226,7 @@ export const services: Service[] = [
     name: "Compliance & Governance",
     description: "PDPA, ISO 27001, data classification, Purview",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "identityAccess",
@@ -208,7 +234,7 @@ export const services: Service[] = [
     name: "IAM",
     description: "Azure AD, SSO, PIM, B2B/B2C identity",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "socMonitoring",
@@ -216,7 +242,7 @@ export const services: Service[] = [
     name: "SOC / Monitoring",
     description: "Sentinel, SOC operations, monitoring design, alerting, and incident response flow",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "microsoftFabric",
@@ -224,7 +250,7 @@ export const services: Service[] = [
     name: "Microsoft Fabric",
     description: "Fabric workspace, lakehouse, pipelines, semantic model, and reporting readiness",
     defaultRequired: true,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "dataAnalytics",
@@ -232,7 +258,7 @@ export const services: Service[] = [
     name: "Data Platform",
     description: "Azure Data Factory, Synapse, lakehouse, data engineering, and analytics foundation",
     defaultRequired: true,
-    defaultCapability: { skills: 4, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "aiGenAiSolutions",
@@ -240,7 +266,7 @@ export const services: Service[] = [
     name: "AI / GenAI Solutions",
     description: "AI solutioning, prompt workflows, copilots, assistants, and responsible AI controls",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 2 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "ragKnowledgeSearch",
@@ -248,7 +274,7 @@ export const services: Service[] = [
     name: "RAG / Knowledge Search",
     description: "Document ingestion, embeddings, vector search, grounding, and answer evaluation",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 2 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "biReporting",
@@ -296,7 +322,7 @@ export const services: Service[] = [
     name: "Assessment / Workshop",
     description: "Discovery workshops, cloud readiness, risk review, and qualification artefacts",
     defaultRequired: false,
-    defaultCapability: { skills: 4, tools: 3, experience: 4 }
+    defaultCapability: { skills: 4, tools: 4, experience: 4 }
   },
   {
     id: "advisoryStrategy",
@@ -304,7 +330,7 @@ export const services: Service[] = [
     name: "Architecture Advisory",
     description: "Digital roadmap, architecture design, change management",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "trainingAdoption",
@@ -312,7 +338,7 @@ export const services: Service[] = [
     name: "Training & Adoption",
     description: "End-user training, LMS, change adoption programmes",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },
   {
     id: "finops",
@@ -320,7 +346,7 @@ export const services: Service[] = [
     name: "FinOps",
     description: "Cloud cost governance, consumption review, tagging, budget alerts, and optimisation",
     defaultRequired: false,
-    defaultCapability: { skills: 3, tools: 3, experience: 3 }
+    defaultCapability: { skills: 4, tools: 4, experience: 3 }
   }
 ];
 

@@ -9,10 +9,10 @@ describe("calculateDqe", () => {
     const result = calculateDqe(defaultInput);
 
     assert.equal(result.selectedServices, 8);
-    assert.equal(result.capabilityScore, 3.67);
-    assert.equal(result.weightedRiskScore, 2.51);
-    assert.equal(result.status, "amber");
-    assert.equal(result.statusLabel, "Proceed With Caution");
+    assert.equal(result.capabilityScore, 4.17);
+    assert.equal(result.weightedRiskScore, 2.46);
+    assert.equal(result.status, "green");
+    assert.equal(result.statusLabel, "Proceed - Low Risk");
   });
 
   it("raises explicit explanations when deadline and team availability are high-risk", () => {
@@ -22,7 +22,7 @@ describe("calculateDqe", () => {
 
     const result = calculateDqe(input);
 
-    assert.ok(result.weightedRiskScore > 2.51);
+    assert.ok(result.weightedRiskScore > 2.46);
     assert.ok(result.explanations.some((explanation) => explanation.includes("deadline feasibility")));
     assert.ok(result.explanations.some((explanation) => explanation.includes("resource & team availability")));
   });
