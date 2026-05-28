@@ -1621,14 +1621,79 @@ function ScoreStep({
             {aiState === "loading" ? "Generating" : "Generate"}
           </button>
         </div>
-        <p>
-          {aiRecommendation ||
-            "Generate an AI-assisted presales narrative using deal notes, selected services, risk scores, and capability gaps."}
-        </p>
+        <AiRecommendationOutput
+          text={
+            aiRecommendation ||
+            "Generate an AI-assisted presales narrative using deal notes, selected services, risk scores, and capability gaps."
+          }
+        />
         {aiState === "fallback" && <small>Gemini key is not configured; showing deterministic fallback.</small>}
         {aiState === "error" && <small>AI service unavailable; showing deterministic fallback.</small>}
       </div>
       <ScenarioComparison input={input} thresholds={thresholds} />
+    </div>
+  );
+}
+
+function normalizeAiRecommendation(text: string) {
+  return text
+    .replace(/\r/g, "")
+    .replace(/\s+--\s+-\s+/g, "\n- ")
+    .replace(/\s+(#{2,4}\s+)/g, "\n$1")
+    .replace(/\s+(\d+\.\s+)/g, "\n$1")
+    .replace(/\s+-\s+/g, "\n- ")
+    .trim();
+}
+
+function renderInlineMarkdown(text: string) {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    return <span key={index}>{part.replace(/\*/g, "")}</span>;
+  });
+}
+
+function AiRecommendationOutput({ text }: { text: string }) {
+  const lines = normalizeAiRecommendation(text)
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  return (
+    <div className="ai-output">
+      {lines.map((line, index) => {
+        const heading = line.match(/^#{2,4}\s+(.*)$/);
+        if (heading) {
+          return (
+            <h3 className="ai-heading" key={`${line}-${index}`}>
+              {renderInlineMarkdown(heading[1])}
+            </h3>
+          );
+        }
+
+        const numbered = line.match(/^(\d+)\.\s+(.*)$/);
+        if (numbered) {
+          return (
+            <div className="ai-numbered" key={`${line}-${index}`}>
+              <b>{numbered[1]}</b>
+              <p>{renderInlineMarkdown(numbered[2])}</p>
+            </div>
+          );
+        }
+
+        const bullet = line.match(/^[-•]\s+(.*)$/);
+        if (bullet) {
+          return (
+            <div className="ai-bullet" key={`${line}-${index}`}>
+              <span aria-hidden="true" />
+              <p>{renderInlineMarkdown(bullet[1])}</p>
+            </div>
+          );
+        }
+
+        return <p key={`${line}-${index}`}>{renderInlineMarkdown(line)}</p>;
+      })}
     </div>
   );
 }

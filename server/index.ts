@@ -603,7 +603,7 @@ app.post("/api/ai-recommendation", async (request, response) => {
           parts: [
             {
               text:
-                "You are a senior presales qualification advisor. Write concise executive guidance for a deal review. Be specific, action-oriented, and avoid hype."
+                "You are a senior presales qualification advisor. Write concise executive guidance for a deal review. Be specific, action-oriented, and avoid hype. Format the answer with short section headings and bullet points. Do not use markdown heading symbols like ###. Do not wrap labels in asterisks. Keep each bullet on its own line."
             }
           ]
         },
@@ -613,7 +613,7 @@ app.post("/api/ai-recommendation", async (request, response) => {
             parts: [
               {
                 text: JSON.stringify({
-                  task: "Generate an executive DQE recommendation for this deal assessment.",
+                  task: "Generate an executive DQE recommendation for this deal assessment. Use these sections: Executive Recommendation, Primary Risk, Critical Actions, Presales Advisor Guidance, Next Gate Requirement.",
                   deal: input.overview,
                   selectedServices: services.filter((service) => input.requiredServices[service.id]).map((service) => service.name),
                   riskScores: input.risk,
