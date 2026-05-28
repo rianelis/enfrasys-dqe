@@ -850,7 +850,7 @@ function HelpStep({ onStart }: { onStart: () => void }) {
             Fill the assessment with the best information available at qualification stage. The goal is not perfection; the goal is a consistent view of deal fit, risk, capability, and next action.
           </p>
           <p>
-            The live Azure dashboard includes two demo assessments: Prolintas TCS Cloud Modernisation POC and Cypark Smart City / VMS Platform Assessment.
+            The live Azure dashboard includes two demo assessments: Prolintas TCS Cloud Modernisation POC and MCMC Dynamics 365 Smart City Assessment.
           </p>
         </div>
         <button className="primary-action" onClick={onStart} type="button">

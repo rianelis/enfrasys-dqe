@@ -167,8 +167,8 @@ export const services: Service[] = [
   {
     id: "powerPlatform",
     group: "industry",
-    name: "Business Applications",
-    description: "Power Platform, workflow automation, reporting apps, and business process tooling",
+    name: "Dynamics 365 / Business Applications",
+    description: "Dynamics 365, Power Platform, workflow automation, reporting apps, and business process tooling",
     defaultRequired: false,
     defaultCapability: { skills: 4, tools: 4, experience: 3 }
   },

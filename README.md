@@ -88,14 +88,14 @@ Current prototype capabilities:
 The prototype now uses an Enfrasys-specific read-only service catalogue instead
 of a generic cloud list.
 
-| Portfolio                   | Example services                                                                              |
-| --------------------------- | --------------------------------------------------------------------------------------------- |
-| Cloud & Infrastructure      | Azure Landing Zone, Azure Infrastructure, Cloud Migration, Hybrid Connectivity, Backup & DR   |
-| Application & Integration   | Application Modernisation, API / Middleware Integration, Containerisation, DevOps / CI/CD     |
-| Data, AI & Analytics        | Microsoft Fabric, Data Platform, AI / GenAI Solutions, RAG / Knowledge Search, BI & Reporting |
-| Security & Governance       | Zero Trust, IAM, Defender / XDR, Compliance & Governance, SOC / Monitoring                    |
-| Industry Solutions          | Smart City / IoT, VMS / Video Analytics, Toll / Transport Systems, Business Applications      |
-| Managed & Advisory Services | Managed Services, Assessment / Workshop, Architecture Advisory, Training & Adoption, FinOps   |
+| Portfolio                   | Example services                                                                                               |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Cloud & Infrastructure      | Azure Landing Zone, Azure Infrastructure, Cloud Migration, Hybrid Connectivity, Backup & DR                    |
+| Application & Integration   | Application Modernisation, API / Middleware Integration, Containerisation, DevOps / CI/CD                      |
+| Data, AI & Analytics        | Microsoft Fabric, Data Platform, AI / GenAI Solutions, RAG / Knowledge Search, BI & Reporting                  |
+| Security & Governance       | Zero Trust, IAM, Defender / XDR, Compliance & Governance, SOC / Monitoring                                     |
+| Industry Solutions          | Smart City / IoT, VMS / Video Analytics, Toll / Transport Systems, Dynamics 365 / Business Applications        |
+| Managed & Advisory Services | Managed Services, Assessment / Workshop, Architecture Advisory, Training & Adoption, FinOps                    |
 
 ## Technology Stack
 
@@ -170,10 +170,10 @@ Do not commit real credentials. Use `.env.example` as the template.
 
 The live Azure prototype includes two saved demo assessments in PostgreSQL:
 
-| Customer  | Opportunity                          | Purpose                                                            | Status               |
-| --------- | ------------------------------------ | ------------------------------------------------------------------ | -------------------- |
-| Prolintas | TCS Cloud Modernisation POC          | Cloud modernisation and managed operations qualification           | Proceed With Caution |
-| Cypark    | Smart City / VMS Platform Assessment | Smart City / VMS, cloud, security, data, and support qualification | Proceed With Caution |
+| Customer  | Opportunity                        | Purpose                                                                       | Status               |
+| --------- | ---------------------------------- | ----------------------------------------------------------------------------- | -------------------- |
+| Prolintas | TCS Cloud Modernisation POC        | Cloud modernisation and managed operations qualification                      | Proceed With Caution |
+| MCMC      | Dynamics 365 Smart City Assessment | Dynamics 365, Smart City, integration, data, security, and support qualification | Proceed With Caution |
 
 Use these records to demonstrate dashboard history, reopen/save behaviour,
 scoring, risk review, approval workflow, Gemini AI recommendation, and PDF

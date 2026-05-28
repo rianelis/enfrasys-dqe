@@ -87,14 +87,14 @@ The current prototype demonstrates:
 The service catalogue has been upgraded from broad generic categories into six
 Enfrasys-oriented portfolios.
 
-| Portfolio                   | Included service examples                                                                     |
-| --------------------------- | --------------------------------------------------------------------------------------------- |
-| Cloud & Infrastructure      | Azure Landing Zone, Azure Infrastructure, Cloud Migration, Hybrid Connectivity, Backup & DR   |
-| Application & Integration   | Application Modernisation, API / Middleware Integration, Containerisation, DevOps / CI/CD     |
-| Data, AI & Analytics        | Microsoft Fabric, Data Platform, AI / GenAI Solutions, RAG / Knowledge Search, BI & Reporting |
-| Security & Governance       | Zero Trust, IAM, Defender / XDR, Compliance & Governance, SOC / Monitoring                    |
-| Industry Solutions          | Smart City / IoT, VMS / Video Analytics, Toll / Transport Systems, Business Applications      |
-| Managed & Advisory Services | Managed Services, Assessment / Workshop, Architecture Advisory, Training & Adoption, FinOps   |
+| Portfolio                   | Included service examples                                                                                      |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Cloud & Infrastructure      | Azure Landing Zone, Azure Infrastructure, Cloud Migration, Hybrid Connectivity, Backup & DR                    |
+| Application & Integration   | Application Modernisation, API / Middleware Integration, Containerisation, DevOps / CI/CD                      |
+| Data, AI & Analytics        | Microsoft Fabric, Data Platform, AI / GenAI Solutions, RAG / Knowledge Search, BI & Reporting                  |
+| Security & Governance       | Zero Trust, IAM, Defender / XDR, Compliance & Governance, SOC / Monitoring                                     |
+| Industry Solutions          | Smart City / IoT, VMS / Video Analytics, Toll / Transport Systems, Dynamics 365 / Business Applications        |
+| Managed & Advisory Services | Managed Services, Assessment / Workshop, Architecture Advisory, Training & Adoption, FinOps                    |
 
 This makes DQE closer to an internal Enfrasys presales tool rather than a
 generic cloud scoring demo. The catalogue remains read-only in this version, so
@@ -151,15 +151,15 @@ Positioning statement:
 
 The live Azure prototype includes two saved demo assessments in PostgreSQL:
 
-| Customer  | Opportunity                          | Purpose                                                                                                             | Result               |
-| --------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| Prolintas | TCS Cloud Modernisation POC          | Demonstrates cloud modernisation, hybrid readiness, security, and managed operations qualification                  | Proceed With Caution |
-| Cypark    | Smart City / VMS Platform Assessment | Demonstrates Smart City / VMS, integration/API dependency, security, data platform, and support model qualification | Proceed With Caution |
+| Customer  | Opportunity                        | Purpose                                                                                                                     | Result               |
+| --------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| Prolintas | TCS Cloud Modernisation POC        | Demonstrates cloud modernisation, hybrid readiness, security, and managed operations qualification                          | Proceed With Caution |
+| MCMC      | Dynamics 365 Smart City Assessment | Demonstrates Dynamics 365, Smart City, integration/API dependency, data platform, security, and support model qualification | Proceed With Caution |
 
 Demo flow:
 
 1. Open the live Azure dashboard.
-2. Open the Prolintas or Cypark demo assessment.
+2. Open the Prolintas or MCMC demo assessment.
 3. Review the Overview, Service Scope, Capability, and Risk pages.
 4. Review the recommendation and top risks on the Score page.
 5. Generate the Gemini AI recommendation.
