@@ -157,7 +157,7 @@ button:disabled {
 }
 
 .workspace {
-  padding: 28px;
+  padding: 32px;
 }
 
 .topbar {
@@ -437,14 +437,16 @@ h1 {
 .history-table {
   border: 1px solid var(--line);
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .history-head,
 .history-row {
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(190px, 1.5fr) 70px minmax(140px, 1fr) minmax(110px, 0.8fr) minmax(110px, 0.8fr) minmax(145px, 1fr) minmax(150px, 0.9fr);
+  grid-template-columns: minmax(220px, 1.45fr) 70px minmax(130px, 0.95fr) minmax(100px, 0.75fr) minmax(110px, 0.75fr) minmax(155px, 0.9fr) 122px;
+  min-width: 980px;
 }
 
 .history-head {
@@ -466,6 +468,17 @@ h1 {
   width: 100%;
 }
 
+.history-head > span,
+.history-row > span,
+.history-row > strong {
+  min-width: 0;
+}
+
+.history-row > span:first-child strong,
+.history-row > span:first-child small {
+  overflow-wrap: anywhere;
+}
+
 .history-row:hover,
 .history-row.active {
   background: #f7faf4;
@@ -478,9 +491,9 @@ h1 {
 }
 
 .history-actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 8px;
+  justify-items: stretch;
 }
 
 .history-actions button {
@@ -494,6 +507,7 @@ h1 {
   justify-content: center;
   min-height: 34px;
   padding: 7px 9px;
+  width: 100%;
 }
 
 .history-actions button:hover {
