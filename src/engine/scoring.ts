@@ -63,6 +63,7 @@ export type DqeResult = {
   selectedServices: number;
   capabilityScore: number | null;
   riskAverages: Record<RiskGroup, number>;
+  commercialRiskScore: number;
   weightedRiskScore: number;
   status: "green" | "amber" | "red";
   statusLabel: string;
@@ -493,10 +494,68 @@ const average = (values: number[]) => {
 };
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 const riskLabelById = Object.fromEntries(riskFactors.map((factor) => [factor.id, factor.label]));
 
-function buildExplanations(input: DqeInput, resultShape: Pick<DqeResult, "capabilityScore" | "riskAverages" | "weightedRiskScore">) {
+function getCommercialRisk(input: DqeInput) {
+  const overview = input.overview;
+  let score = 2.5;
+  const flags: string[] = [];
+
+  if (overview.budgetConfirmed === "No") {
+    score += 0.7;
+    flags.push("Budget is not confirmed.");
+  } else if (overview.budgetConfirmed === "Unknown") {
+    score += 0.35;
+    flags.push("Budget confirmation is still unknown.");
+  } else {
+    score -= 0.2;
+  }
+
+  if (overview.decisionMakerIdentified === "No") {
+    score += 0.5;
+    flags.push("Decision maker is not identified.");
+  } else if (overview.decisionMakerIdentified === "Unknown") {
+    score += 0.25;
+    flags.push("Decision maker confirmation is still unknown.");
+  }
+
+  if (overview.fundingSourceKnown === "No") {
+    score += 0.4;
+    flags.push("Funding source is not known.");
+  } else if (overview.fundingSourceKnown === "Unknown") {
+    score += 0.2;
+  }
+
+  if (overview.partnerDependency === "High") {
+    score += 0.35;
+    flags.push("Partner dependency is high.");
+  } else if (overview.partnerDependency === "Low") {
+    score -= 0.1;
+  }
+
+  if (overview.marginConfidence === "Low") {
+    score += 0.45;
+    flags.push("Margin confidence is low.");
+  } else if (overview.marginConfidence === "High") {
+    score -= 0.2;
+  }
+
+  if (overview.winProbability === "Low") {
+    score += 0.45;
+    flags.push("Win probability is low.");
+  } else if (overview.winProbability === "High") {
+    score -= 0.2;
+  }
+
+  return {
+    score: round2(clamp(score, 1, 5)),
+    flags
+  };
+}
+
+function buildExplanations(input: DqeInput, resultShape: Pick<DqeResult, "capabilityScore" | "riskAverages" | "commercialRiskScore" | "weightedRiskScore">) {
   const highRiskFactors = riskFactors
     .filter((factor) => input.risk[factor.id] >= 4)
     .map((factor) => factor.label.toLowerCase());
@@ -515,6 +574,12 @@ function buildExplanations(input: DqeInput, resultShape: Pick<DqeResult, "capabi
     explanations.push(`Capability alignment is pulling the score upward because the overall capability score is ${resultShape.capabilityScore.toFixed(2)}.`);
   } else if (resultShape.capabilityScore !== null) {
     explanations.push(`Capability alignment is helping offset delivery risk with an overall score of ${resultShape.capabilityScore.toFixed(2)}.`);
+  }
+
+  if (resultShape.commercialRiskScore >= 3) {
+    explanations.push(`Commercial qualification is increasing risk because the commercial score is ${resultShape.commercialRiskScore.toFixed(2)}.`);
+  } else if (resultShape.commercialRiskScore <= 2.2) {
+    explanations.push(`Commercial qualification is helping the recommendation because budget, margin, decision path, or win probability are stronger.`);
   }
 
   const weightFocus = (Object.entries(input.weights) as Array<[RiskGroup, number]>).sort((a, b) => b[1] - a[1])[0];
@@ -537,18 +602,26 @@ function buildRecommendation(status: DqeResult["status"], input: DqeInput, flags
   const context = input.overview.notes.trim()
     ? ` Deal notes indicate: ${input.overview.notes.trim()}`
     : "";
+  const commercialActions = [
+    input.overview.budgetConfirmed !== "Yes" ? "confirm budget and funding source" : "",
+    input.overview.decisionMakerIdentified !== "Yes" ? "identify the decision maker and approval path" : "",
+    input.overview.marginConfidence === "Low" ? "validate margin before final pricing" : "",
+    input.overview.winProbability === "Low" ? "review pursuit priority with BD leadership" : "",
+    input.overview.partnerDependency === "High" ? "lock partner scope, SLA, and handover responsibilities" : ""
+  ].filter(Boolean);
   const actionText = actions.length > 0 ? ` Priority actions: ${Array.from(new Set(actions)).join("; ")}.` : "";
+  const commercialText = commercialActions.length > 0 ? ` Commercial gates: ${commercialActions.join("; ")}.` : "";
   const aiFuture = " This can later be replaced or augmented with AI-generated narrative using the same structured inputs.";
 
   if (status === "green") {
-    return `Proceed: this deal is well-aligned with Enfrasys capabilities. Assign a Solution Architect, draft the SOW with clear scope boundaries, and apply standard delivery governance.${context}${aiFuture}`;
+    return `Proceed: this deal is well-aligned with Enfrasys capabilities. Assign a Solution Architect, draft the SOW with clear scope boundaries, and apply standard delivery governance.${commercialText}${context}${aiFuture}`;
   }
 
   if (status === "amber") {
-    return `Proceed with caution: address flagged risks before committing, confirm delivery capacity, secure management sign-off on SLA commitments, and add a 15-20% contingency buffer.${actionText}${context}${aiFuture}`;
+    return `Proceed with caution: address flagged risks before committing, confirm delivery capacity, secure management sign-off on SLA commitments, and add a 15-20% contingency buffer.${actionText}${commercialText}${context}${aiFuture}`;
   }
 
-  return `Escalate: route to Solutions Director and Head of Delivery, identify partners for capability gaps, phase the scope where possible, and do not commit without leadership approval.${actionText} Active flags: ${flags.filter((flag) => !flag.startsWith("Skill gap risk") && !flag.startsWith("Deadline risk") && !flag.startsWith("Resource availability") && !flag.startsWith("SLA commitments are") && !flag.startsWith("Customer IT maturity") && !flag.startsWith("Capability level")).join(" ")}${context}${aiFuture}`;
+  return `Escalate: route to Solutions Director and Head of Delivery, identify partners for capability gaps, phase the scope where possible, and do not commit without leadership approval.${actionText}${commercialText} Active flags: ${flags.filter((flag) => !flag.startsWith("Skill gap risk") && !flag.startsWith("Deadline risk") && !flag.startsWith("Resource availability") && !flag.startsWith("SLA commitments are") && !flag.startsWith("Customer IT maturity") && !flag.startsWith("Capability level")).join(" ")}${context}${aiFuture}`;
 }
 
 export function calculateDqe(input: DqeInput, thresholds: ScoreThresholds = defaultThresholds): DqeResult {
@@ -560,6 +633,7 @@ export function calculateDqe(input: DqeInput, thresholds: ScoreThresholds = defa
 
   const capabilityScore = capabilityValues.length > 0 ? average(capabilityValues) : null;
   const capabilityRisk = capabilityScore === null ? 2.5 : 6 - capabilityScore;
+  const commercialRisk = getCommercialRisk(input);
 
   const riskAverages: Record<RiskGroup, number> = {
     development: average(riskFactors.filter((factor) => factor.group === "development").map((factor) => input.risk[factor.id])),
@@ -568,11 +642,11 @@ export function calculateDqe(input: DqeInput, thresholds: ScoreThresholds = defa
   };
 
   const blendedDevelopmentRisk = riskAverages.development * 0.7 + capabilityRisk * 0.3;
-  const weightedRiskScore = round2(
+  const deliveryRiskScore =
     blendedDevelopmentRisk * input.weights.development +
       riskAverages.time * input.weights.time +
-      riskAverages.operations * input.weights.operations
-  );
+      riskAverages.operations * input.weights.operations;
+  const weightedRiskScore = round2(clamp(deliveryRiskScore * 0.85 + commercialRisk.score * 0.15, 1, 5));
 
   const status = weightedRiskScore <= thresholds.greenMax ? "green" : weightedRiskScore <= thresholds.amberMax ? "amber" : "red";
   const statusLabel =
@@ -596,7 +670,10 @@ export function calculateDqe(input: DqeInput, thresholds: ScoreThresholds = defa
       : "Customer IT maturity is manageable.",
     capabilityScore !== null && capabilityScore < 2.5
       ? "Overall capability score is too low - consider scoping down or partnering."
-      : "Capability level is sufficient for this deal."
+      : "Capability level is sufficient for this deal.",
+    commercialRisk.score >= 3.5
+      ? `Commercial qualification risk is elevated - ${commercialRisk.flags.join(" ")}`
+      : "Commercial qualification is acceptable for this stage."
   ];
 
   const resultShape = {
@@ -606,6 +683,7 @@ export function calculateDqe(input: DqeInput, thresholds: ScoreThresholds = defa
       time: round2(riskAverages.time),
       operations: round2(riskAverages.operations)
     },
+    commercialRiskScore: commercialRisk.score,
     weightedRiskScore
   };
 
@@ -616,6 +694,7 @@ export function calculateDqe(input: DqeInput, thresholds: ScoreThresholds = defa
     selectedServices: selected.length,
     capabilityScore: resultShape.capabilityScore,
     riskAverages: resultShape.riskAverages,
+    commercialRiskScore: resultShape.commercialRiskScore,
     weightedRiskScore,
     status,
     statusLabel,

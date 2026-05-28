@@ -543,12 +543,14 @@ function App() {
     doc.setFont("helvetica", "normal");
     doc.text(`Selected Services: ${result.selectedServices}`, 14, 104);
     doc.text(`Capability Score: ${result.capabilityScore?.toFixed(2) ?? "N/A"}`, 14, 112);
+    doc.text(`Commercial Risk: ${result.commercialRiskScore?.toFixed(2) ?? "N/A"}`, 112, 112);
 
     doc.setFont("helvetica", "bold");
     doc.text("Risk Breakdown", 14, 128);
     doc.setFont("helvetica", "normal");
     const chartRows = [
       ...riskGroups.map((group) => ({ label: groupLabels[group], value: result.riskAverages[group], weight: `${Math.round(input.weights[group] * 100)}%` })),
+      { label: "Commercial Risk", value: result.commercialRiskScore ?? 0, weight: "15%" },
       { label: "Capability Score", value: result.capabilityScore ?? 0, weight: "alignment" }
     ];
     chartRows.forEach((row, index) => {
@@ -571,6 +573,7 @@ function App() {
     doc.text(doc.splitTextToSize(result.recommendation, 180), 14, 240);
 
     doc.addPage();
+    const proposalSupport = buildProposalSupport(input, result);
     doc.setFont("helvetica", "bold");
     doc.text("Risk Flags", 14, 18);
     doc.setFont("helvetica", "normal");
@@ -596,6 +599,44 @@ function App() {
     doc.line(114, 190, 190, 190);
     doc.text("Solution Architect", 14, 198);
     doc.text("Management Approver", 114, 198);
+
+    doc.addPage();
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text("Proposal Assistant", 14, 18);
+    doc.setFontSize(11);
+    let proposalY = 30;
+    ([
+      ["Clarification Questions", proposalSupport.clarifications],
+      ["Proposal Assumptions", proposalSupport.assumptions],
+      ["Proposal Exclusions", proposalSupport.exclusions],
+      ["SOW Points", proposalSupport.sowPoints],
+      ["Risk Mitigation Actions", proposalSupport.mitigations]
+    ] as const).forEach(([section, items]) => {
+      doc.setFont("helvetica", "bold");
+      doc.text(section, 14, proposalY);
+      proposalY += 8;
+      doc.setFont("helvetica", "normal");
+      const text = doc.splitTextToSize(items.map((item) => `- ${item}`).join("\n"), 180);
+      doc.text(text, 14, proposalY);
+      proposalY += text.length * 5 + 10;
+      if (proposalY > 250) {
+        doc.addPage();
+        proposalY = 20;
+      }
+    });
+
+    if (aiRecommendation.trim()) {
+      if (proposalY > 210) {
+        doc.addPage();
+        proposalY = 20;
+      }
+      doc.setFont("helvetica", "bold");
+      doc.text("AI Recommendation", 14, proposalY);
+      proposalY += 8;
+      doc.setFont("helvetica", "normal");
+      doc.text(doc.splitTextToSize(normalizeAiRecommendation(aiRecommendation), 180), 14, proposalY);
+    }
     const pageCount = doc.getNumberOfPages();
     for (let page = 1; page <= pageCount; page += 1) {
       doc.setPage(page);
@@ -1454,6 +1495,42 @@ function getTopRisks(input: DqeInput) {
     .slice(0, 3);
 }
 
+function buildProposalSupport(input: DqeInput, result: DqeResult) {
+  const selected = services.filter((service) => input.requiredServices[service.id]);
+  const topRisks = getTopRisks(input);
+  const scopeNames = selected.map((service) => service.name).slice(0, 5);
+
+  return {
+    clarifications: [
+      input.overview.budgetConfirmed !== "Yes" ? "Confirm budget availability, funding source, and approval owner." : "Confirm final commercial approval route and procurement timeline.",
+      input.overview.decisionMakerIdentified !== "Yes" ? "Identify the business decision maker and technical approver." : "Confirm decision maker expectations for success criteria.",
+      `Validate scope boundaries for ${scopeNames.join(", ") || "selected services"}.`,
+      topRisks[0] ? `Clarify mitigation plan for ${topRisks[0].label.toLowerCase()}.` : "Confirm there are no hidden delivery constraints."
+    ],
+    assumptions: [
+      "Customer will provide timely access to required technical, procurement, and business stakeholders.",
+      "Existing vendor dependencies and third-party responsibilities will be documented before final proposal submission.",
+      "Commercial pricing remains subject to confirmed scope, timeline, support model, and partner inputs."
+    ],
+    exclusions: [
+      "Unconfirmed custom development, integrations, or vendor remediation outside the agreed scope.",
+      "Production cutover, SLA penalties, or managed operations commitments not explicitly approved in the SOW.",
+      "Licensing, third-party hardware, or external vendor costs unless separately stated."
+    ],
+    sowPoints: [
+      `Qualification decision: ${result.statusLabel}.`,
+      `Primary services in scope: ${scopeNames.join(", ") || "to be confirmed"}.`,
+      `Risk score: ${result.weightedRiskScore.toFixed(2)}; commercial risk: ${result.commercialRiskScore?.toFixed(2) ?? "N/A"}.`,
+      "Include governance cadence, acceptance criteria, escalation path, and handover requirements."
+    ],
+    mitigations: [
+      result.status === "red" ? "Escalate to leadership before committing commercial scope." : "Proceed through normal governance with documented risk owners.",
+      input.overview.partnerDependency === "High" ? "Lock partner scope, SLA, and responsibility matrix before pricing." : "Keep partner and vendor assumptions visible in the proposal.",
+      "Add contingency for high-scoring technical, timeline, operations, or commercial risks."
+    ]
+  };
+}
+
 function createScenario(input: DqeInput, type: "current" | "reduced" | "partner" | "timeline", thresholds: ScoreThresholds) {
   const scenario = cloneInput(input);
   if (type === "reduced") {
@@ -1562,6 +1639,7 @@ function ScoreStep({
       : result.status === "amber"
         ? `Resolve ${topRisks[0].label.toLowerCase()} before commitment.`
         : "Escalate to leadership before committing commercial scope.";
+  const proposalSupport = buildProposalSupport(input, result);
 
   return (
     <div className="panel-flow">
@@ -1616,6 +1694,7 @@ function ScoreStep({
         <strong>Recommendation</strong>
         <p>{result.recommendation}</p>
       </div>
+      <ProposalSupportPanel support={proposalSupport} />
       <div className="recommendation ai-panel">
         <div className="ai-title">
           <strong>AI Recommendation</strong>
@@ -1634,6 +1713,34 @@ function ScoreStep({
         {aiState === "error" && <small>AI service unavailable; showing deterministic fallback.</small>}
       </div>
       <ScenarioComparison input={input} thresholds={thresholds} />
+    </div>
+  );
+}
+
+function ProposalSupportPanel({ support }: { support: ReturnType<typeof buildProposalSupport> }) {
+  const sections = [
+    ["Clarification Questions", support.clarifications],
+    ["Proposal Assumptions", support.assumptions],
+    ["Proposal Exclusions", support.exclusions],
+    ["SOW Points", support.sowPoints],
+    ["Risk Mitigation Actions", support.mitigations]
+  ] as const;
+
+  return (
+    <div className="proposal-support">
+      <strong>Proposal Assistant</strong>
+      <div>
+        {sections.map(([title, items]) => (
+          <article key={title}>
+            <h3>{title}</h3>
+            <ul>
+              {items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1944,6 +2051,7 @@ function RiskChart({ result }: { result: DqeResult }) {
     { label: "Development", value: result.riskAverages.development },
     { label: "Time", value: result.riskAverages.time },
     { label: "Operations", value: result.riskAverages.operations },
+    { label: "Commercial", value: result.commercialRiskScore ?? 0 },
     { label: "Capability", value: result.capabilityScore ?? 0, positive: true }
   ];
 

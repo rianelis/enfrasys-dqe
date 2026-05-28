@@ -10,9 +10,10 @@ describe("calculateDqe", () => {
 
     assert.equal(result.selectedServices, 8);
     assert.equal(result.capabilityScore, 4.17);
-    assert.equal(result.weightedRiskScore, 2.46);
-    assert.equal(result.status, "green");
-    assert.equal(result.statusLabel, "Proceed - Low Risk");
+    assert.equal(result.commercialRiskScore, 3.3);
+    assert.equal(result.weightedRiskScore, 2.58);
+    assert.equal(result.status, "amber");
+    assert.equal(result.statusLabel, "Proceed With Caution");
   });
 
   it("raises explicit explanations when deadline and team availability are high-risk", () => {
@@ -22,9 +23,34 @@ describe("calculateDqe", () => {
 
     const result = calculateDqe(input);
 
-    assert.ok(result.weightedRiskScore > 2.46);
+    assert.ok(result.weightedRiskScore > 2.58);
     assert.ok(result.explanations.some((explanation) => explanation.includes("deadline feasibility")));
     assert.ok(result.explanations.some((explanation) => explanation.includes("resource & team availability")));
+  });
+
+  it("increases risk when commercial qualification is weak", () => {
+    const strong = cloneInput(defaultInput);
+    strong.overview.budgetConfirmed = "Yes";
+    strong.overview.decisionMakerIdentified = "Yes";
+    strong.overview.fundingSourceKnown = "Yes";
+    strong.overview.marginConfidence = "High";
+    strong.overview.winProbability = "High";
+    strong.overview.partnerDependency = "Low";
+
+    const weak = cloneInput(defaultInput);
+    weak.overview.budgetConfirmed = "No";
+    weak.overview.decisionMakerIdentified = "No";
+    weak.overview.fundingSourceKnown = "No";
+    weak.overview.marginConfidence = "Low";
+    weak.overview.winProbability = "Low";
+    weak.overview.partnerDependency = "High";
+
+    const strongResult = calculateDqe(strong);
+    const weakResult = calculateDqe(weak);
+
+    assert.ok(weakResult.commercialRiskScore > strongResult.commercialRiskScore);
+    assert.ok(weakResult.weightedRiskScore > strongResult.weightedRiskScore);
+    assert.ok(weakResult.recommendation.includes("Commercial gates"));
   });
 
   it("honors editable risk weights", () => {

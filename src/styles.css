@@ -1437,6 +1437,47 @@ h1 {
   padding: 16px;
 }
 
+.proposal-support {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.proposal-support > strong {
+  font-size: 18px;
+}
+
+.proposal-support > div {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.proposal-support article {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.proposal-support h3 {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.proposal-support ul {
+  color: var(--muted);
+  margin: 0;
+  padding-left: 18px;
+}
+
+.proposal-support li + li {
+  margin-top: 5px;
+}
+
 .ai-output {
   display: grid;
   gap: 10px;
@@ -1861,6 +1902,7 @@ h1 {
   .missing-grid,
   .executive-result,
   .exec-grid,
+  .proposal-support > div,
   .admin-grid,
   .service-admin-list,
   .scenario-panel > div {
