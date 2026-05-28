@@ -64,9 +64,9 @@ Current prototype capabilities:
 - Dashboard with assessment history.
 - Tender/RFP intake and deal overview form.
 - BD process alignment tracker.
-- Basic commercial qualification fields for budget, decision maker, funding,
-  partner dependency, margin confidence, win probability, proposal status, and
-  PO/SO reference.
+- Commercial qualification inputs and scoring for budget, decision maker,
+  funding, partner dependency, margin confidence, win probability, proposal
+  status, and PO/SO reference.
 - Enfrasys service scope checklist with 30 catalogue services across cloud,
   application/integration, data/AI, security, industry, and managed/advisory
   portfolios.
@@ -212,10 +212,8 @@ Recommended next improvements:
 
 - Make the service catalogue editable from Admin so portfolio owners can add,
   disable, describe, and classify Enfrasys offerings without changing code.
-- Add commercial qualification scoring including budget confirmation, decision
-  maker, funding source, strategic account value, partner dependency, margin
-  confidence, submission effort, and win probability.
-- Make the service catalogue fully editable as admin data.
+- Expand BD commercial scoring with strategic account value, submission effort,
+  competitor position, procurement confidence, and commercial approval route.
 - Add role-based access control for admin and approver actions.
 - Improve Gemini-generated recommendations with internal templates, assumptions,
   exclusions, and BD guidebook content.

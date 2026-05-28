@@ -187,7 +187,9 @@ The repository includes the following evidence pack:
 Current limitations:
 
 - Service catalogue is still read-only.
-- Commercial qualification factors are not fully scored yet.
+- Commercial qualification now contributes to scoring and recommendation, but
+  deeper BD factors such as strategic account value and submission effort can be
+  added in the next phase.
 - Gemini recommendation is enabled, but it should be expanded later with
   internal knowledge, proposal templates, assumptions, exclusions, and BD
   guidebook content.
@@ -206,20 +208,16 @@ Recommended next phase:
    - Assign category.
    - Set default capability.
    - Mark strategic service.
-2. Add commercial qualification scoring:
-   - Budget confirmed.
-   - Decision maker identified.
-   - Funding source known.
+2. Expand BD commercial qualification scoring:
    - Strategic account value.
-   - Partner dependency.
-   - Margin confidence.
    - Submission effort required.
-   - Win probability.
-3. Make the service catalogue editable through admin configuration.
-4. Add role-based access for admins, owners, and approvers.
-5. Add RAG-based proposal assistant using internal templates, service
+   - Competitor position.
+   - Procurement confidence.
+   - Commercial approval route.
+3. Add role-based access for admins, owners, and approvers.
+4. Add RAG-based proposal assistant using internal templates, service
    descriptions, assumptions, exclusions, and BD guidebook content.
-6. Improve executive PDF report layout with Enfrasys branding, charts, metadata,
+5. Improve executive PDF report layout with Enfrasys branding, charts, metadata,
    and approval/signature section.
 
 ## Final Assessment
