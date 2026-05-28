@@ -115,8 +115,9 @@ const selectOptions = {
   opportunityType: ["Tender / RFP", "Direct Proposal", "Renewal / Expansion", "PO / SO Follow-up", "Internal Evaluation"],
   stage: [
     "Tender / RFP Received",
-    "Initial Qualification",
-    "Technical Review",
+    "DQE Opportunity Intake",
+    "Technical + Commercial Qualification",
+    "Risk Assessment",
     "Proposal Decision",
     "Proposal Development",
     "Management Approval",
@@ -1141,7 +1142,7 @@ function OverviewStep({
   return (
     <div className="panel-flow">
       <SectionTitle icon={Building2} title="Deal Overview" />
-      <BdProcessAlignment activeStage={input.overview.stage} />
+      <BdProcessAlignment activeStage={input.overview.stage} onStageChange={(stage) => updateOverview("stage", stage)} />
       <div className="form-grid">
         <TextField required label="Customer / Organisation" value={input.overview.customer} onChange={(value) => updateOverview("customer", value)} />
         <TextField label="Opportunity / Project" value={input.overview.opportunity} onChange={(value) => updateOverview("opportunity", value)} />
@@ -1174,7 +1175,7 @@ function OverviewStep({
   );
 }
 
-function BdProcessAlignment({ activeStage }: { activeStage: string }) {
+function BdProcessAlignment({ activeStage, onStageChange }: { activeStage: string; onStageChange: (stage: string) => void }) {
   const stages = [
     "Tender / RFP Received",
     "DQE Opportunity Intake",
@@ -1185,9 +1186,15 @@ function BdProcessAlignment({ activeStage }: { activeStage: string }) {
     "Management Approval",
     "PO / Sales Order Reference"
   ];
+  const normalizeStage = (stage: string) => {
+    if (stage === "Initial Qualification") return "DQE Opportunity Intake";
+    if (stage === "Technical Review") return "Technical + Commercial Qualification";
+    return stage;
+  };
+  const normalizedActiveStage = normalizeStage(activeStage);
   const activeIndex = Math.max(
     0,
-    stages.findIndex((stage) => activeStage === stage || (activeStage === "Initial Qualification" && stage === "Technical + Commercial Qualification") || (activeStage === "Technical Review" && stage === "Technical + Commercial Qualification"))
+    stages.findIndex((stage) => normalizedActiveStage === stage)
   );
 
   return (
@@ -1198,9 +1205,15 @@ function BdProcessAlignment({ activeStage }: { activeStage: string }) {
       </div>
       <div className="bd-flow-steps">
         {stages.map((stage, index) => (
-          <span className={index <= activeIndex ? "active" : ""} key={stage}>
+          <button
+            type="button"
+            aria-pressed={normalizedActiveStage === stage}
+            className={index <= activeIndex ? "active" : ""}
+            key={stage}
+            onClick={() => onStageChange(stage)}
+          >
             {stage}
-          </span>
+          </button>
         ))}
       </div>
     </section>

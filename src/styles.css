@@ -360,18 +360,37 @@ h1 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.bd-flow-steps span {
+.bd-flow-steps button {
+  appearance: none;
   background: #f5f8f4;
   border: 1px solid var(--line);
   border-radius: 7px;
   color: var(--muted);
+  cursor: pointer;
   font-size: 12px;
   font-weight: 800;
   min-height: 42px;
   padding: 10px;
+  text-align: left;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
 }
 
-.bd-flow-steps span.active {
+.bd-flow-steps button:hover {
+  border-color: #9fb9b1;
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.bd-flow-steps button:focus-visible {
+  outline: 3px solid rgba(204, 160, 64, 0.32);
+  outline-offset: 2px;
+}
+
+.bd-flow-steps button.active {
   background: #fff8e0;
   border-color: #e2c768;
   color: var(--ink);
