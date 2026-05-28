@@ -224,17 +224,19 @@ function validateInput(input: DqeInput) {
 function getCompletion(input: DqeInput) {
   const selectedServices = services.filter((service) => input.requiredServices[service.id]);
   const weightTotal = Object.values(input.weights).reduce((sum, weight) => sum + weight, 0);
+  const overviewComplete = requiredOverviewFields.every((field) => input.overview[field].trim());
+  const hasSelectedServices = selectedServices.length > 0;
 
   return {
     dashboard: true,
-    overview: requiredOverviewFields.every((field) => input.overview[field].trim()),
-    requirements: selectedServices.length > 0,
-    capability: selectedServices.every((service) => {
+    overview: overviewComplete,
+    requirements: overviewComplete && hasSelectedServices,
+    capability: overviewComplete && hasSelectedServices && selectedServices.every((service) => {
       const score = input.capability[service.id];
       return score && score.skills >= 1 && score.tools >= 1 && score.experience >= 1;
     }),
-    risk: riskFactors.every((factor) => input.risk[factor.id] >= 1 && input.risk[factor.id] <= 5),
-    settings: Math.abs(weightTotal - 1) <= 0.001,
+    risk: overviewComplete && riskFactors.every((factor) => input.risk[factor.id] >= 1 && input.risk[factor.id] <= 5),
+    settings: overviewComplete && Math.abs(weightTotal - 1) <= 0.001,
     admin: true,
     score: validateInput(input).length === 0,
     help: true
@@ -1534,6 +1536,7 @@ function ScoreStep({
         </div>
         <div className="readiness-panel">
           <strong>Workflow readiness</strong>
+          <p>Start with Overview. The remaining workflow stays locked until the required deal basics are complete.</p>
           <div>
             {steps
               .filter((step) => step.id !== "dashboard" && step.id !== "help" && step.id !== "admin")

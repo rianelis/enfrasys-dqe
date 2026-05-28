@@ -1740,6 +1740,11 @@ h1 {
   padding: 16px;
 }
 
+.readiness-panel p {
+  color: var(--muted);
+  margin: 0;
+}
+
 .readiness-panel > div {
   display: flex;
   flex-wrap: wrap;
