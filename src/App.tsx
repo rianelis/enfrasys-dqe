@@ -704,9 +704,9 @@ function App() {
     <main className="app-shell">
       <aside className="left-rail" aria-label="DQE workflow">
         <div className="brand-lockup">
-          <div className="brand-mark">E</div>
+          <img className="brand-logo" src="/enfrasys-logo.svg" alt="Enfrasys" />
           <div>
-            <p>Enfrasys</p>
+            <p>Deal Qualification</p>
             <strong>DQE</strong>
           </div>
         </div>
