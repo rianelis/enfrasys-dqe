@@ -7,6 +7,8 @@ export type Service = {
   description: string;
   defaultRequired: boolean;
   defaultCapability: CapabilityScores;
+  strategic?: boolean;
+  disabled?: boolean;
 };
 
 export type CapabilityScores = {
@@ -459,7 +461,7 @@ export const defaultOverview: DealOverview = {
   contactName: "",
   contactRole: "IT Director",
   opportunityType: "Tender / RFP",
-  stage: "RFP/ITT Received",
+  stage: "Tender / RFP Received",
   dealValue: "RM 5M - RM 20M",
   sector: "Government (Federal)",
   timeline: "3-6 months",
@@ -487,6 +489,8 @@ export const defaultInput: DqeInput = {
     operations: 0.3
   }
 };
+
+export const getActiveServices = (catalogue: Service[] = services) => catalogue.filter((service) => !service.disabled);
 
 const average = (values: number[]) => {
   if (values.length === 0) return 0;
@@ -624,8 +628,9 @@ function buildRecommendation(status: DqeResult["status"], input: DqeInput, flags
   return `Escalate: route to Solutions Director and Head of Delivery, identify partners for capability gaps, phase the scope where possible, and do not commit without leadership approval.${actionText}${commercialText} Active flags: ${flags.filter((flag) => !flag.startsWith("Skill gap risk") && !flag.startsWith("Deadline risk") && !flag.startsWith("Resource availability") && !flag.startsWith("SLA commitments are") && !flag.startsWith("Customer IT maturity") && !flag.startsWith("Capability level")).join(" ")}${context}${aiFuture}`;
 }
 
-export function calculateDqe(input: DqeInput, thresholds: ScoreThresholds = defaultThresholds): DqeResult {
-  const selected = services.filter((service) => input.requiredServices[service.id]);
+export function calculateDqe(input: DqeInput, thresholds: ScoreThresholds = defaultThresholds, serviceCatalogue: Service[] = services): DqeResult {
+  const activeServices = getActiveServices(serviceCatalogue);
+  const selected = activeServices.filter((service) => input.requiredServices[service.id]);
   const capabilityValues = selected.map((service) => {
     const score = input.capability[service.id] ?? service.defaultCapability;
     return average([score.skills, score.tools, score.experience]);

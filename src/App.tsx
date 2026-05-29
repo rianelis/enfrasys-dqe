@@ -32,11 +32,13 @@ import {
   defaultInput,
   DqeInput,
   DqeResult,
+  getActiveServices,
   groupLabels,
   microsoftPartnerServiceIds,
   RiskGroup,
   riskFactors,
   ScoreThresholds,
+  Service,
   ServiceGroup,
   services
 } from "./engine/scoring";
@@ -49,7 +51,7 @@ const steps = [
   { id: "risk", label: "Risk", icon: AlertTriangle },
   { id: "settings", label: "Settings", icon: Settings },
   { id: "admin", label: "Admin", icon: Settings },
-  { id: "score", label: "Score", icon: Gauge },
+  { id: "score", label: "Decision", icon: Gauge },
   { id: "help", label: "Help", icon: HelpCircle }
 ] as const;
 
@@ -61,6 +63,7 @@ type AdminConfig = {
   defaultWeights: Record<RiskGroup, number>;
   thresholds: ScoreThresholds;
   recommendationRules: string;
+  serviceCatalog: Service[];
 };
 
 type AssessmentSummary = {
@@ -100,14 +103,14 @@ const riskGroups: RiskGroup[] = ["development", "time", "operations"];
 const requiredOverviewFields: Array<keyof DqeInput["overview"]> = ["customer", "owner", "dealValue", "sector", "timeline"];
 const recommendedWorkflow = [
   { step: "Dashboard", outcome: "Open an existing deal or start a new qualification." },
-  { step: "New Assessment", outcome: "Create a fresh Tender / RFP qualification record." },
+  { step: "New Qualification", outcome: "Create a fresh Tender / RFP qualification record." },
   { step: "Overview", outcome: "Capture BD owner, customer, value, deadline, budget, and status." },
   { step: "Service Scope", outcome: "Select the Enfrasys services needed for the opportunity." },
   { step: "Capability", outcome: "Confirm Microsoft partner readiness and delivery experience." },
   { step: "Risk", outcome: "Rate development, time, and operations risk from 1 to 5." },
-  { step: "Score", outcome: "Review decision, top risks, recommendation, and approval status." },
+  { step: "Qualification Decision", outcome: "Review decision, top risks, recommendation, and management review status." },
   { step: "AI Recommendation", outcome: "Generate proposal guidance, mitigation points, and next action." },
-  { step: "Save / Export / Approval", outcome: "Autosave, download the report, or submit for review." }
+  { step: "Save / Export / Management Review", outcome: "Autosave, download the report, or submit for review." }
 ];
 
 const selectOptions = {
@@ -193,12 +196,29 @@ const defaultAdminConfig: AdminConfig = {
     amberMax: 3.5
   },
   recommendationRules:
-    "Green: proceed with standard governance.\nAmber: confirm capacity, resolve flagged risks, add contingency.\nRed: escalate to leadership before committing."
+    "Green: proceed with standard governance.\nAmber: confirm capacity, resolve flagged risks, add contingency.\nRed: escalate to leadership before committing.",
+  serviceCatalog: services.map((service) => ({
+    ...service,
+    strategic: service.strategic ?? service.defaultRequired,
+    disabled: service.disabled ?? false
+  }))
 };
+
+const normalizeAdminConfig = (config: Partial<AdminConfig> = {}): AdminConfig => ({
+  ...defaultAdminConfig,
+  ...config,
+  defaultWeights: { ...defaultAdminConfig.defaultWeights, ...config.defaultWeights },
+  thresholds: { ...defaultAdminConfig.thresholds, ...config.thresholds },
+  serviceCatalog: (config.serviceCatalog ?? defaultAdminConfig.serviceCatalog).map((service) => ({
+    ...service,
+    strategic: Boolean(service.strategic),
+    disabled: Boolean(service.disabled)
+  }))
+});
 
 const loadAdminConfig = () => {
   const stored = localStorage.getItem("dqe-admin-config");
-  return stored ? (JSON.parse(stored) as AdminConfig) : defaultAdminConfig;
+  return stored ? normalizeAdminConfig(JSON.parse(stored) as AdminConfig) : defaultAdminConfig;
 };
 
 function validateInput(input: DqeInput) {
@@ -222,8 +242,8 @@ function validateInput(input: DqeInput) {
   return fieldErrors;
 }
 
-function getCompletion(input: DqeInput) {
-  const selectedServices = services.filter((service) => input.requiredServices[service.id]);
+function getCompletion(input: DqeInput, serviceCatalog: Service[] = services) {
+  const selectedServices = getActiveServices(serviceCatalog).filter((service) => input.requiredServices[service.id]);
   const weightTotal = Object.values(input.weights).reduce((sum, weight) => sum + weight, 0);
   const overviewComplete = requiredOverviewFields.every((field) => input.overview[field].trim());
   const hasSelectedServices = selectedServices.length > 0;
@@ -260,16 +280,18 @@ function App() {
   const [approver, setApprover] = useState("");
   const [aiRecommendation, setAiRecommendation] = useState("");
   const [aiState, setAiState] = useState<"idle" | "loading" | "ready" | "fallback" | "error">("idle");
+  const serviceCatalog = adminConfig.serviceCatalog;
+  const activeServices = useMemo(() => getActiveServices(serviceCatalog), [serviceCatalog]);
 
   const validationErrors = useMemo(() => validateInput(input), [input]);
   const isValid = validationErrors.length === 0;
-  const localResult = useMemo(() => calculateDqe(input, adminConfig.thresholds), [input, adminConfig.thresholds]);
+  const localResult = useMemo(() => calculateDqe(input, adminConfig.thresholds, serviceCatalog), [input, adminConfig.thresholds, serviceCatalog]);
   const result = apiResult ?? localResult;
   const activeIndex = steps.findIndex((step) => step.id === activeStep);
-  const completion = useMemo(() => getCompletion(input), [input]);
+  const completion = useMemo(() => getCompletion(input, serviceCatalog), [input, serviceCatalog]);
   const pageTitle =
     activeStep === "dashboard"
-      ? "Deal assessments"
+      ? "Tender / RFP qualifications"
       : activeStep === "help"
         ? "User help"
         : activeStep === "admin"
@@ -278,7 +300,9 @@ function App() {
             ? "Scoring settings"
             : activeStep === "requirements"
               ? "Service scope"
-              : input.overview.opportunity || "New assessment";
+              : activeStep === "score"
+                ? "Qualification decision"
+              : input.overview.opportunity || "New qualification";
 
   useEffect(() => {
     void loadAssessmentList();
@@ -365,7 +389,7 @@ function App() {
       const response = await fetch("/api/admin/config");
       if (!response.ok) throw new Error("Unable to load admin config");
       const config = (await response.json()) as AdminConfig;
-      setAdminConfig(config);
+      setAdminConfig(normalizeAdminConfig(config));
       setAdminConfigLoaded(true);
     } catch {
       setAdminConfigLoaded(true);
@@ -471,7 +495,15 @@ function App() {
   const applyAdminConfigToAssessment = () => {
     setInput((current) => ({
       ...current,
-      weights: adminConfig.defaultWeights
+      weights: adminConfig.defaultWeights,
+      requiredServices: {
+        ...current.requiredServices,
+        ...Object.fromEntries(getActiveServices(adminConfig.serviceCatalog).map((service) => [service.id, service.defaultRequired]))
+      },
+      capability: {
+        ...Object.fromEntries(getActiveServices(adminConfig.serviceCatalog).map((service) => [service.id, service.defaultCapability])),
+        ...current.capability
+      }
     }));
   };
 
@@ -501,21 +533,26 @@ function App() {
     }
 
     const doc = new jsPDF();
-    const title = input.overview.opportunity || "DQE Assessment";
+    const title = input.overview.opportunity || "DQE Qualification";
     const fileName = `${title.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "dqe-assessment"}.pdf`;
 
     doc.setFillColor(16, 35, 28);
-    doc.rect(0, 0, 210, 30, "F");
+    doc.rect(0, 0, 210, 34, "F");
     doc.setFillColor(240, 201, 95);
-    doc.rect(14, 9, 12, 12, "F");
+    doc.roundedRect(14, 8, 14, 14, 2, 2, "F");
     doc.setTextColor(16, 35, 28);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
-    doc.text("E", 18, 17);
+    doc.text("E", 19, 17);
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(17);
-    doc.text("Enfrasys Deal Qualification Report", 32, 17);
+    doc.setFontSize(16);
+    doc.text("Enfrasys", 34, 14);
+    doc.setFontSize(11);
+    doc.text("Tender / RFP Qualification Report", 34, 24);
+    doc.setFontSize(9);
+    doc.setTextColor(204, 223, 215);
+    doc.text("DQE v0.1 | Management review evidence", 150, 14);
     doc.setTextColor(23, 33, 28);
     doc.setProperties({
       title: `DQE Report - ${title}`,
@@ -528,7 +565,7 @@ function App() {
     doc.text(`Customer: ${input.overview.customer}`, 14, 42);
     doc.text(`Opportunity: ${title}`, 14, 50);
     doc.text(`Owner: ${input.overview.owner}`, 14, 58);
-    doc.text(`Approval: ${approvalStatus}`, 14, 66);
+    doc.text(`Management Review: ${approvalStatus}`, 14, 66);
     doc.text(`Version: DQE 0.1`, 14, 74);
     doc.text(`Sector: ${input.overview.sector}`, 112, 42);
     doc.text(`Deal Value: ${input.overview.dealValue}`, 112, 50);
@@ -539,7 +576,7 @@ function App() {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(15);
     doc.text(`Decision: ${result.statusLabel}`, 14, 84);
-    doc.text(`Weighted Risk Score: ${result.weightedRiskScore.toFixed(2)}`, 14, 94);
+    doc.text(`Qualification Risk: ${result.weightedRiskScore.toFixed(2)}`, 14, 94);
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
     doc.text(`Selected Services: ${result.selectedServices}`, 14, 104);
@@ -564,7 +601,7 @@ function App() {
     });
 
     doc.setFont("helvetica", "bold");
-    doc.text("Score Explanation", 14, 186);
+    doc.text("Decision Explanation", 14, 186);
     doc.setFont("helvetica", "normal");
     doc.text(doc.splitTextToSize(result.explanations.map((explanation) => `- ${explanation}`).join("\n"), 180), 14, 196);
 
@@ -574,7 +611,7 @@ function App() {
     doc.text(doc.splitTextToSize(result.recommendation, 180), 14, 240);
 
     doc.addPage();
-    const proposalSupport = buildProposalSupport(input, result);
+    const proposalSupport = buildProposalSupport(input, result, activeServices);
     doc.setFont("helvetica", "bold");
     doc.text("Risk Flags", 14, 18);
     doc.setFont("helvetica", "normal");
@@ -591,7 +628,7 @@ function App() {
     doc.text(`Partner Dependency: ${input.overview.partnerDependency || "Unknown"}`, 112, 110);
     doc.text(`PO/SO Reference: ${input.overview.poSoReference || "Pending"}`, 112, 118);
     doc.setFont("helvetica", "bold");
-    doc.text("Approval & Sign-off", 14, 146);
+    doc.text("Management Review & Sign-off", 14, 146);
     doc.setFont("helvetica", "normal");
     doc.text(`Status: ${approvalStatus}`, 14, 158);
     doc.text(`Approver: ${approver || "Pending"}`, 14, 166);
@@ -660,9 +697,13 @@ function App() {
 
   const updateRequired = (serviceId: string, required: boolean) => {
     setSaveState("idle");
+    const service = serviceCatalog.find((item) => item.id === serviceId);
     setInput((current) => ({
       ...current,
-      requiredServices: { ...current.requiredServices, [serviceId]: required }
+      requiredServices: { ...current.requiredServices, [serviceId]: required },
+      capability: service && !current.capability[serviceId]
+        ? { ...current.capability, [serviceId]: service.defaultCapability }
+        : current.capability
     }));
   };
 
@@ -754,9 +795,9 @@ function App() {
           <div className="action-cluster">
             <button className="primary-top-action" onClick={startNewAssessment} type="button">
               <Plus size={18} aria-hidden="true" />
-              New Assessment
+              New Qualification
             </button>
-            <button className="icon-action" onClick={() => void saveAssessment()} title="Save assessment" type="button">
+            <button className="icon-action" onClick={() => void saveAssessment()} title="Save qualification" type="button">
               <Save size={18} aria-hidden="true" />
               <span>Save</span>
             </button>
@@ -764,7 +805,7 @@ function App() {
               <Download size={18} aria-hidden="true" />
               <span>PDF</span>
             </button>
-            <button className="icon-action" onClick={() => setInput(cloneInput(defaultInput))} title="Load sample assessment" type="button">
+            <button className="icon-action" onClick={() => setInput(cloneInput(defaultInput))} title="Load sample qualification" type="button">
               <RotateCcw size={18} aria-hidden="true" />
               <span>Sample</span>
             </button>
@@ -788,8 +829,8 @@ function App() {
             {activeStep === "overview" && (
               <OverviewStep input={input} updateOverview={updateOverview} validationErrors={validationErrors} />
             )}
-            {activeStep === "requirements" && <RequirementsStep input={input} updateRequired={updateRequired} />}
-            {activeStep === "capability" && <CapabilityStep input={input} updateCapability={updateCapability} />}
+            {activeStep === "requirements" && <RequirementsStep input={input} serviceCatalog={activeServices} updateRequired={updateRequired} />}
+            {activeStep === "capability" && <CapabilityStep input={input} serviceCatalog={activeServices} updateCapability={updateCapability} />}
             {activeStep === "risk" && <RiskStep input={input} updateRisk={updateRisk} />}
             {activeStep === "settings" && <SettingsStep input={input} updateWeight={updateWeight} />}
             {activeStep === "admin" && (
@@ -806,6 +847,7 @@ function App() {
                 aiRecommendation={aiRecommendation}
                 aiState={aiState}
                 thresholds={adminConfig.thresholds}
+                serviceCatalog={activeServices}
                 onGenerateAi={generateAiRecommendation}
                 onExport={exportPdf}
                 onGoToOverview={() => setActiveStep("overview")}
@@ -864,13 +906,13 @@ function SavedAssessments({
   onDashboard: () => void;
 }) {
   return (
-    <section className="saved-list" aria-label="Saved assessments">
+    <section className="saved-list" aria-label="Saved qualifications">
       <button className="saved-title saved-title-button" onClick={onDashboard} type="button">
         <FolderOpen size={16} aria-hidden="true" />
         <span>Saved</span>
       </button>
       {summaries.length === 0 ? (
-        <p>No saved assessments yet.</p>
+        <p>No saved qualifications yet.</p>
       ) : (
         summaries.slice(0, 6).map((summary) => (
           <button className={summary.id === activeId ? "saved-item active" : "saved-item"} key={summary.id} onClick={() => onOpen(summary.id)} type="button">
@@ -886,27 +928,27 @@ function SavedAssessments({
 function HelpStep({ onStart }: { onStart: () => void }) {
   return (
     <div className="panel-flow">
-      <SectionTitle icon={HelpCircle} title="How to Fill a DQE Assessment" />
+      <SectionTitle icon={HelpCircle} title="How to Fill a Tender / RFP Qualification" />
       <section className="help-intro">
         <div>
           <strong>Use DQE before committing presales effort.</strong>
           <p>
-            Fill the assessment with the best information available at qualification stage. The goal is not perfection; the goal is a consistent view of deal fit, risk, capability, and next action.
+            Fill the qualification with the best information available at tender/RFP stage. The goal is not perfection; the goal is a consistent view of deal fit, risk, capability, and next action.
           </p>
           <p>
-            The live Azure dashboard includes two demo assessments: Prolintas TCS Cloud Modernisation POC and MCMC Dynamics 365 Smart City Assessment.
+            The live Azure dashboard includes two demo qualifications: Prolintas TCS Cloud Modernisation POC and MCMC Dynamics 365 Smart City Assessment.
           </p>
         </div>
         <button className="primary-action" onClick={onStart} type="button">
           <Plus size={16} aria-hidden="true" />
-          Start New Assessment
+          Start New Qualification
         </button>
       </section>
 
       <section className="workflow-guide" aria-label="Recommended DQE workflow">
         <div className="workflow-guide-header">
           <span>Recommended workflow</span>
-          <strong>Dashboard to approval, in one guided path</strong>
+          <strong>Dashboard to management review, in one guided path</strong>
         </div>
         <div className="workflow-steps">
           {recommendedWorkflow.map((item, index) => (
@@ -961,7 +1003,7 @@ function HelpStep({ onStart }: { onStart: () => void }) {
         <article className="help-card">
           <span>4</span>
           <strong>Risk</strong>
-          <p>Score risk from 1 to 5. Lower is safer, higher needs mitigation or approval before commitment.</p>
+          <p>Score risk from 1 to 5. Lower is safer, higher needs mitigation or management review before commitment.</p>
           <ul>
             <li>1: low risk, normal delivery confidence.</li>
             <li>3: moderate risk, needs attention.</li>
@@ -972,7 +1014,7 @@ function HelpStep({ onStart }: { onStart: () => void }) {
         <article className="help-card">
           <span>5</span>
           <strong>Settings</strong>
-          <p>Use weights only when the assessment needs a different emphasis. For most users, keep the default weights.</p>
+          <p>Use weights only when the qualification needs a different emphasis. For most users, keep the default weights.</p>
           <ul>
             <li>Development: solution complexity and build risk.</li>
             <li>Time: deadline and approval timing risk.</li>
@@ -982,8 +1024,8 @@ function HelpStep({ onStart }: { onStart: () => void }) {
 
         <article className="help-card">
           <span>6</span>
-          <strong>Score</strong>
-          <p>Review the final decision, top risks, recommendation, approval status, and export the PDF when ready.</p>
+          <strong>Qualification Decision</strong>
+          <p>Review the final decision, top risks, recommendation, management review status, and export the PDF when ready.</p>
           <ul>
             <li>Green: proceed with normal governance.</li>
             <li>Amber: proceed with mitigation actions.</li>
@@ -994,10 +1036,10 @@ function HelpStep({ onStart }: { onStart: () => void }) {
 
         <article className="help-card">
           <span>7</span>
-          <strong>Approval</strong>
-          <p>Use approval actions after the assessment has enough detail for review.</p>
+          <strong>Management Review</strong>
+          <p>Use review actions after the qualification has enough detail for management or solution review.</p>
           <ul>
-            <li>Submit: send the assessment for management or solution review.</li>
+            <li>Submit: send the qualification for management or solution review.</li>
             <li>Approve: confirm the current scope and recommendation.</li>
             <li>Revise: request updates before proceeding.</li>
             <li>Reject: mark the opportunity as not qualified in its current form.</li>
@@ -1019,7 +1061,7 @@ function HelpStep({ onStart }: { onStart: () => void }) {
       <section className="help-callout">
         <strong>What good looks like</strong>
         <p>
-          A completed assessment has enough BD and technical context to justify the recommendation, explain the top risks, support proposal preparation, and provide an approval or PDF evidence trail.
+          A completed qualification has enough BD and technical context to justify the recommendation, explain the top risks, support proposal preparation, and provide a management review or PDF evidence trail.
         </p>
       </section>
     </div>
@@ -1061,7 +1103,7 @@ function DashboardStep({
 
   return (
     <div className="panel-flow">
-      <SectionTitle icon={LayoutDashboard} title="Assessment History" />
+      <SectionTitle icon={LayoutDashboard} title="Qualification History" />
       <div className="dashboard-filters">
         <label className="field search-field">
           <span>Search</span>
@@ -1071,15 +1113,15 @@ function DashboardStep({
           </div>
         </label>
         <SelectField label="Owner" value={ownerFilter} options={["All", ...owners]} onChange={setOwnerFilter} />
-        <SelectField label="Approval" value={statusFilter} options={approvalStatuses} onChange={setStatusFilter} />
+        <SelectField label="Management Review" value={statusFilter} options={approvalStatuses} onChange={setStatusFilter} />
         <SelectField
           label="Sort"
           value={sortBy}
           options={["updated", "scoreHigh", "scoreLow", "status"]}
           optionLabels={{
             updated: "Last updated",
-            scoreHigh: "Score high to low",
-            scoreLow: "Score low to high",
+            scoreHigh: "Risk high to low",
+            scoreLow: "Risk low to high",
             status: "Status"
           }}
           onChange={(value) => setSortBy(value as typeof sortBy)}
@@ -1088,20 +1130,20 @@ function DashboardStep({
       <div className="history-table">
         <div className="history-head">
           <span>Deal</span>
-          <span>Score</span>
+          <span>Risk Score</span>
           <span>Status</span>
           <span>Owner</span>
-          <span>Approval</span>
+          <span>Review</span>
           <span>Last Updated</span>
           <span>Action</span>
         </div>
         {filteredSummaries.length === 0 ? (
           <div className="history-empty">
-            <strong>No matching assessments</strong>
-            <span>Create a deal assessment or adjust the filters to find saved work.</span>
+            <strong>No matching qualifications</strong>
+            <span>Create a Tender / RFP qualification or adjust the filters to find saved work.</span>
             <button className="primary-action" onClick={onNew} type="button">
               <Plus size={16} aria-hidden="true" />
-              New Assessment
+              New Qualification
             </button>
           </div>
         ) : (
@@ -1201,7 +1243,7 @@ function BdProcessAlignment({ activeStage, onStageChange }: { activeStage: strin
     <section className="bd-flow" aria-label="BD process alignment">
       <div>
         <strong>BD Process Alignment</strong>
-        <p>DQE acts as the qualification checkpoint between tender/RFP intake, technical/commercial review, proposal readiness, approval, and PO/SO handover.</p>
+        <p>DQE acts as the qualification checkpoint between tender/RFP intake, technical/commercial review, proposal readiness, management review, and PO/SO handover.</p>
       </div>
       <div className="bd-flow-steps">
         {stages.map((stage, index) => (
@@ -1222,9 +1264,11 @@ function BdProcessAlignment({ activeStage, onStageChange }: { activeStage: strin
 
 function RequirementsStep({
   input,
+  serviceCatalog,
   updateRequired
 }: {
   input: DqeInput;
+  serviceCatalog: Service[];
   updateRequired: (serviceId: string, required: boolean) => void;
 }) {
   return (
@@ -1234,7 +1278,7 @@ function RequirementsStep({
         <div className="group-block" key={group}>
           <h2>{groupLabels[group]}</h2>
           <div className="service-list">
-            {services
+            {serviceCatalog
               .filter((service) => service.group === group)
               .map((service) => (
                 <label className="toggle-row" key={service.id}>
@@ -1261,12 +1305,14 @@ function RequirementsStep({
 
 function CapabilityStep({
   input,
+  serviceCatalog,
   updateCapability
 }: {
   input: DqeInput;
+  serviceCatalog: Service[];
   updateCapability: (serviceId: string, key: keyof DqeInput["capability"][string], value: number) => void;
 }) {
-  const selectedServices = services.filter((service) => input.requiredServices[service.id]);
+  const selectedServices = serviceCatalog.filter((service) => input.requiredServices[service.id]);
   const microsoftAlignedCount = selectedServices.filter((service) => microsoftPartnerServiceIds.has(service.id)).length;
   const capabilityAverage =
     selectedServices.length === 0
@@ -1372,7 +1418,7 @@ function SettingsStep({ input, updateWeight }: { input: DqeInput; updateWeight: 
           <div className="setting-row" key={group}>
             <div>
               <strong>{groupLabels[group]}</strong>
-              <small>Adjust how much this risk area affects the current assessment.</small>
+              <small>Adjust how much this risk area affects the current qualification.</small>
             </div>
             <Slider label="Weight" value={Math.round(input.weights[group] * 100)} min={0} max={100} onChange={(value) => updateWeight(group, value)} />
           </div>
@@ -1401,20 +1447,56 @@ function AdminSettings({
       }
     });
   };
+  const updateService = (id: string, patch: Partial<Service>) => {
+    onChange({
+      ...config,
+      serviceCatalog: config.serviceCatalog.map((service) => service.id === id ? { ...service, ...patch } : service)
+    });
+  };
+  const updateServiceCapability = (id: string, key: keyof Service["defaultCapability"], value: number) => {
+    onChange({
+      ...config,
+      serviceCatalog: config.serviceCatalog.map((service) =>
+        service.id === id
+          ? { ...service, defaultCapability: { ...service.defaultCapability, [key]: value } }
+          : service
+      )
+    });
+  };
+  const addService = () => {
+    const id = `customService${Date.now()}`;
+    onChange({
+      ...config,
+      serviceCatalog: [
+        ...config.serviceCatalog,
+        {
+          id,
+          group: "managedAdvisory",
+          name: "New Enfrasys Service",
+          description: "Describe the service scope, dependencies, and delivery model.",
+          defaultRequired: false,
+          strategic: false,
+          disabled: false,
+          defaultCapability: { skills: 3, tools: 3, experience: 3 }
+        }
+      ]
+    });
+  };
+  const activeCount = config.serviceCatalog.filter((service) => !service.disabled).length;
 
   return (
     <div className="panel-flow">
       <SectionTitle icon={Settings} title="Admin Configuration" />
       <div className={Math.abs(total - 1) <= 0.001 ? "weight-total ok" : "weight-total warn"}>
         <strong>{Math.round(total * 100)}%</strong>
-        <span>Default weights and decision thresholds for new assessments.</span>
+        <span>Default weights and decision thresholds for new qualifications.</span>
       </div>
       <div className="settings-grid">
         {riskGroups.map((group) => (
           <div className="setting-row" key={group}>
             <div>
               <strong>Default {groupLabels[group]}</strong>
-              <small>Used when a new assessment is created.</small>
+              <small>Used when a new qualification is created.</small>
             </div>
             <Slider label="Default" value={Math.round(config.defaultWeights[group] * 100)} min={0} max={100} onChange={(value) => updateDefaultWeight(group, value)} />
           </div>
@@ -1454,37 +1536,67 @@ function AdminSettings({
       </label>
       <div className="service-admin-list">
         <div className="catalogue-heading">
-          <strong>Service Catalogue</strong>
-          <span>{services.length} Enfrasys portfolio services. Read-only in this prototype; editable admin catalogue is the next phase.</span>
+          <div>
+            <strong>Service Catalogue</strong>
+            <span>{activeCount} active services, {config.serviceCatalog.length - activeCount} disabled. Stored in the backend admin configuration.</span>
+          </div>
+          <button className="secondary-action" onClick={addService} type="button">
+            <Plus size={16} aria-hidden="true" />
+            Add Service
+          </button>
         </div>
         {serviceGroups.map((group) => (
           <section className="catalogue-group" key={group}>
             <div className="catalogue-group-heading">
               <strong>{groupLabels[group]}</strong>
-              <span>{services.filter((service) => service.group === group).length} services</span>
+              <span>{config.serviceCatalog.filter((service) => service.group === group && !service.disabled).length} active services</span>
             </div>
             <div className="catalogue-services">
-              {services
+              {config.serviceCatalog
                 .filter((service) => service.group === group)
                 .map((service) => (
-                  <article key={service.id}>
+                  <article className={service.disabled ? "catalogue-disabled" : ""} key={service.id}>
                     <div className="catalogue-service-title">
                       <strong>{service.name}</strong>
-                      <span className={service.defaultRequired ? "scope-pill required" : "scope-pill"}>{service.defaultRequired ? "Default in scope" : "Optional"}</span>
+                      <div className="catalogue-pills">
+                        {service.strategic && <span className="scope-pill strategic">Strategic</span>}
+                        <span className={service.defaultRequired ? "scope-pill required" : "scope-pill"}>{service.defaultRequired ? "Default in scope" : "Optional"}</span>
+                        {service.disabled && <span className="scope-pill disabled">Disabled</span>}
+                      </div>
                     </div>
-                    <p>{service.description}</p>
+                    <div className="catalogue-edit-grid">
+                      <label className="field">
+                        <span>Service Name</span>
+                        <input value={service.name} onChange={(event) => updateService(service.id, { name: event.target.value })} />
+                      </label>
+                      <label className="field">
+                        <span>Portfolio</span>
+                        <select value={service.group} onChange={(event) => updateService(service.id, { group: event.target.value as ServiceGroup })}>
+                          {serviceGroups.map((option) => <option key={option} value={option}>{groupLabels[option]}</option>)}
+                        </select>
+                      </label>
+                      <label className="field wide">
+                        <span>Description</span>
+                        <textarea value={service.description} rows={2} onChange={(event) => updateService(service.id, { description: event.target.value })} />
+                      </label>
+                    </div>
+                    <div className="catalogue-switches">
+                      <label><input checked={service.defaultRequired} type="checkbox" onChange={(event) => updateService(service.id, { defaultRequired: event.target.checked })} /> Default in scope</label>
+                      <label><input checked={Boolean(service.strategic)} type="checkbox" onChange={(event) => updateService(service.id, { strategic: event.target.checked })} /> Strategic service</label>
+                      <label><input checked={Boolean(service.disabled)} type="checkbox" onChange={(event) => updateService(service.id, { disabled: event.target.checked })} /> Disabled</label>
+                    </div>
                     <dl>
                       <div>
                         <dt>Skills</dt>
-                        <dd>{service.defaultCapability.skills}/5</dd>
+                        <dd><input max={5} min={1} type="number" value={service.defaultCapability.skills} onChange={(event) => updateServiceCapability(service.id, "skills", Number(event.target.value))} /></dd>
                       </div>
                       <div>
                         <dt>Platform</dt>
-                        <dd>{service.defaultCapability.tools}/5</dd>
+                        <dd><input max={5} min={1} type="number" value={service.defaultCapability.tools} onChange={(event) => updateServiceCapability(service.id, "tools", Number(event.target.value))} /></dd>
                       </div>
                       <div>
                         <dt>Experience</dt>
-                        <dd>{service.defaultCapability.experience}/5</dd>
+                        <dd><input max={5} min={1} type="number" value={service.defaultCapability.experience} onChange={(event) => updateServiceCapability(service.id, "experience", Number(event.target.value))} /></dd>
                       </div>
                     </dl>
                   </article>
@@ -1494,7 +1606,7 @@ function AdminSettings({
         ))}
       </div>
       <button className="primary-action config-action" onClick={onApply} type="button">
-        Apply Defaults To Current Assessment
+        Apply Defaults To Current Qualification
         <ArrowRight size={17} aria-hidden="true" />
       </button>
     </div>
@@ -1508,8 +1620,8 @@ function getTopRisks(input: DqeInput) {
     .slice(0, 3);
 }
 
-function buildProposalSupport(input: DqeInput, result: DqeResult) {
-  const selected = services.filter((service) => input.requiredServices[service.id]);
+function buildProposalSupport(input: DqeInput, result: DqeResult, serviceCatalog: Service[] = services) {
+  const selected = serviceCatalog.filter((service) => input.requiredServices[service.id]);
   const topRisks = getTopRisks(input);
   const scopeNames = selected.map((service) => service.name).slice(0, 5);
 
@@ -1544,10 +1656,10 @@ function buildProposalSupport(input: DqeInput, result: DqeResult) {
   };
 }
 
-function createScenario(input: DqeInput, type: "current" | "reduced" | "partner" | "timeline", thresholds: ScoreThresholds) {
+function createScenario(input: DqeInput, type: "current" | "reduced" | "partner" | "timeline", thresholds: ScoreThresholds, serviceCatalog: Service[] = services) {
   const scenario = cloneInput(input);
   if (type === "reduced") {
-    services
+    serviceCatalog
       .filter((service) => service.defaultRequired === false)
       .forEach((service) => {
         scenario.requiredServices[service.id] = false;
@@ -1571,7 +1683,7 @@ function createScenario(input: DqeInput, type: "current" | "reduced" | "partner"
     scenario.risk.concurrentLoad = Math.max(1, scenario.risk.concurrentLoad - 1);
     scenario.risk.approvalLeadTime = Math.max(1, scenario.risk.approvalLeadTime - 1);
   }
-  return calculateDqe(scenario, thresholds);
+  return calculateDqe(scenario, thresholds, serviceCatalog);
 }
 
 function ScoreStep({
@@ -1583,6 +1695,7 @@ function ScoreStep({
   aiRecommendation,
   aiState,
   thresholds,
+  serviceCatalog,
   onGenerateAi,
   onExport,
   onGoToOverview
@@ -1595,6 +1708,7 @@ function ScoreStep({
   aiRecommendation: string;
   aiState: "idle" | "loading" | "ready" | "fallback" | "error";
   thresholds: ScoreThresholds;
+  serviceCatalog: Service[];
   onGenerateAi: () => void;
   onExport: () => void;
   onGoToOverview: () => void;
@@ -1602,14 +1716,14 @@ function ScoreStep({
   if (validationErrors.length > 0) {
     return (
       <div className="panel-flow">
-        <SectionTitle icon={BarChart3} title="Qualification Score" />
+        <SectionTitle icon={BarChart3} title="Qualification Decision" />
         <div className="blocked-score hero-block">
           <div className="hero-icon">
             <AlertTriangle size={28} aria-hidden="true" />
           </div>
           <div>
             <strong>Complete the deal basics first.</strong>
-            <p>DQE will unlock the score, PDF export, and approval actions once the required overview fields are complete.</p>
+            <p>DQE will unlock the decision, PDF export, and management review actions once the required overview fields are complete.</p>
           </div>
           <button className="primary-action" onClick={onGoToOverview} type="button">
             Go to Overview
@@ -1652,11 +1766,11 @@ function ScoreStep({
       : result.status === "amber"
         ? `Resolve ${topRisks[0].label.toLowerCase()} before commitment.`
         : "Escalate to leadership before committing commercial scope.";
-  const proposalSupport = buildProposalSupport(input, result);
+  const proposalSupport = buildProposalSupport(input, result, serviceCatalog);
 
   return (
     <div className="panel-flow">
-      <SectionTitle icon={BarChart3} title="Qualification Score" />
+      <SectionTitle icon={BarChart3} title="Qualification Decision" />
       <section className={`executive-result ${result.status}`}>
         <div>
           <span>Overall Decision</span>
@@ -1665,14 +1779,14 @@ function ScoreStep({
         </div>
         <div className="executive-score">
           <span>{result.weightedRiskScore.toFixed(2)}</span>
-          <small>Risk score</small>
+          <small>Qualification risk</small>
         </div>
         <div className="executive-actions">
           <button onClick={onExport} type="button">
             <Download size={16} aria-hidden="true" />
             Export PDF
           </button>
-          <small>Approval: {approvalStatus}</small>
+          <small>Management review: {approvalStatus}</small>
         </div>
       </section>
       <div className="exec-grid">
@@ -1698,7 +1812,7 @@ function ScoreStep({
         ))}
       </div>
       <div className="recommendation">
-        <strong>Score Explanation</strong>
+        <strong>Decision Explanation</strong>
         {result.explanations.map((explanation) => (
           <p key={explanation}>{explanation}</p>
         ))}
@@ -1725,7 +1839,7 @@ function ScoreStep({
         {aiState === "fallback" && <small>Gemini key is not configured; showing deterministic fallback.</small>}
         {aiState === "error" && <small>AI service unavailable; showing deterministic fallback.</small>}
       </div>
-      <ScenarioComparison input={input} thresholds={thresholds} />
+      <ScenarioComparison input={input} thresholds={thresholds} serviceCatalog={serviceCatalog} />
     </div>
   );
 }
@@ -1821,12 +1935,12 @@ function AiRecommendationOutput({ text }: { text: string }) {
   );
 }
 
-function ScenarioComparison({ input, thresholds }: { input: DqeInput; thresholds: ScoreThresholds }) {
+function ScenarioComparison({ input, thresholds, serviceCatalog }: { input: DqeInput; thresholds: ScoreThresholds; serviceCatalog: Service[] }) {
   const scenarios = [
-    { id: "current", label: "Current scope", result: createScenario(input, "current", thresholds) },
-    { id: "reduced", label: "Reduced scope", result: createScenario(input, "reduced", thresholds) },
-    { id: "partner", label: "Partner-supported", result: createScenario(input, "partner", thresholds) },
-    { id: "timeline", label: "Extended timeline", result: createScenario(input, "timeline", thresholds) }
+    { id: "current", label: "Current scope", result: createScenario(input, "current", thresholds, serviceCatalog) },
+    { id: "reduced", label: "Reduced scope", result: createScenario(input, "reduced", thresholds, serviceCatalog) },
+    { id: "partner", label: "Partner-supported", result: createScenario(input, "partner", thresholds, serviceCatalog) },
+    { id: "timeline", label: "Extended timeline", result: createScenario(input, "timeline", thresholds, serviceCatalog) }
   ];
 
   return (
@@ -1857,22 +1971,22 @@ function DashboardSummaryPanel({ summaries, onNew }: { summaries: AssessmentSumm
       <div className="dashboard-summary-hero">
         <span>Portfolio View</span>
         <strong>{totalDeals}</strong>
-        <small>{totalDeals === 1 ? "assessment saved" : "assessments saved"}</small>
+        <small>{totalDeals === 1 ? "qualification saved" : "qualifications saved"}</small>
       </div>
       <div className="metric-grid">
-        <Metric label="Avg Score" value={totalDeals ? averageScore.toFixed(2) : "N/A"} />
+        <Metric label="Avg Risk" value={totalDeals ? averageScore.toFixed(2) : "N/A"} />
         <Metric label="Pending" value={String(pendingApprovals)} />
         <Metric label="High Risk" value={String(highRiskDeals)} />
         <Metric label="Reviewed" value={String(summaries.filter((summary) => summary.approvalStatus === "Approved").length)} />
       </div>
       <button className="primary-action summary-action" onClick={onNew} type="button">
         <Plus size={16} aria-hidden="true" />
-        New Assessment
+        New Qualification
       </button>
       <div className="dashboard-recent">
         <strong>Recent Deals</strong>
         {recentDeals.length === 0 ? (
-          <span>No assessments yet.</span>
+          <span>No qualifications yet.</span>
         ) : (
           recentDeals.map((summary) => (
             <div key={summary.id}>
@@ -1907,11 +2021,11 @@ function HelpSummaryPanel({ onStart }: { onStart: () => void }) {
         {recommendedWorkflow.slice(0, 7).map((item) => (
           <span key={item.step}>{item.step}</span>
         ))}
-        <small>Then generate AI guidance, export, or submit for approval.</small>
+        <small>Then generate AI guidance, export, or submit for management review.</small>
       </div>
       <button className="primary-action summary-action" onClick={onStart} type="button">
         <Plus size={16} aria-hidden="true" />
-        New Assessment
+        New Qualification
       </button>
       <div className="mini-summary">
         <span>Scoring rule</span>
@@ -1924,17 +2038,18 @@ function HelpSummaryPanel({ onStart }: { onStart: () => void }) {
 
 function AdminSummaryPanel({ config }: { config: AdminConfig }) {
   const total = Object.values(config.defaultWeights).reduce((sum, value) => sum + value, 0);
+  const activeCount = config.serviceCatalog.filter((service) => !service.disabled).length;
 
   return (
     <aside className="result-panel help-summary">
       <div className="dashboard-summary-hero">
         <span>Admin</span>
-        <strong>{services.length}</strong>
-        <small>catalogue services</small>
+        <strong>{activeCount}</strong>
+        <small>active catalogue services</small>
       </div>
       <div className="help-checklist">
         <strong>Configuration affects:</strong>
-        <span>Default weights for new assessments</span>
+        <span>Default weights for new qualifications</span>
         <span>Green threshold: {config.thresholds.greenMax.toFixed(1)} or below</span>
         <span>Amber threshold: {config.thresholds.amberMax.toFixed(1)} or below</span>
         <span>Service catalogue reference values</span>
@@ -1986,7 +2101,7 @@ function ResultPanel({
         </small>
       </div>
       <div className="metric-grid">
-        <Metric label="Score" value={isValid ? result.weightedRiskScore.toFixed(2) : "Pending"} />
+        <Metric label="Risk" value={isValid ? result.weightedRiskScore.toFixed(2) : "Pending"} />
         <Metric label="Services" value={String(result.selectedServices)} />
         <Metric label="Capability" value={result.capabilityScore?.toFixed(2) ?? "N/A"} />
         <Metric label="Timeline" value={input.overview.timeline || "Required"} />
@@ -2020,7 +2135,7 @@ function ResultPanel({
       </div>
       <div className="approval-box">
         <div>
-          <span>Approval</span>
+          <span>Management Review</span>
           <strong>{approvalStatus}</strong>
         </div>
         <label className="field">
@@ -2028,7 +2143,7 @@ function ResultPanel({
           <input value={approver} onChange={(event) => onApproverChange(event.target.value)} placeholder="Approver name" />
         </label>
         <label className="field">
-          <span>Approval Notes</span>
+          <span>Review Notes</span>
           <textarea value={approvalNotes} onChange={(event) => onApprovalNotesChange(event.target.value)} rows={3} placeholder="Decision notes" />
         </label>
         <div className="approval-actions">
@@ -2098,7 +2213,7 @@ function ValidationBanner({ errors }: { errors: string[] }) {
 function SaveBanner({ state }: { state: "saving" | "saved" | "error" }) {
   return (
     <div className={`save-banner ${state}`}>
-      {state === "saving" ? "Saving assessment..." : state === "saved" ? "Assessment saved." : "Assessment could not be saved."}
+      {state === "saving" ? "Saving qualification..." : state === "saved" ? "Qualification saved." : "Qualification could not be saved."}
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import pg from "pg";
-import { calculateDqe, defaultInput, DqeInput, DqeResult, services, riskFactors, ScoreThresholds } from "../src/engine/scoring";
+import { calculateDqe, defaultInput, DqeInput, DqeResult, getActiveServices, services, riskFactors, ScoreThresholds, Service } from "../src/engine/scoring";
 
 const app = express();
 const port = Number(process.env.PORT ?? 4100);
@@ -21,6 +21,7 @@ type AdminConfig = {
   defaultWeights: DqeInput["weights"];
   thresholds: ScoreThresholds;
   recommendationRules: string;
+  serviceCatalog: Service[];
 };
 
 const defaultAdminConfig: AdminConfig = {
@@ -30,7 +31,12 @@ const defaultAdminConfig: AdminConfig = {
     amberMax: 3.5
   },
   recommendationRules:
-    "Green: proceed with standard governance.\nAmber: confirm capacity, resolve flagged risks, add contingency.\nRed: escalate to leadership before committing."
+    "Green: proceed with standard governance.\nAmber: confirm capacity, resolve flagged risks, add contingency.\nRed: escalate to leadership before committing.",
+  serviceCatalog: services.map((service) => ({
+    ...service,
+    strategic: service.strategic ?? service.defaultRequired,
+    disabled: service.disabled ?? false
+  }))
 };
 
 type AssessmentRecord = {
@@ -78,8 +84,8 @@ type Store = {
   kind: "sqlite" | "postgres";
   listAssessments: () => Promise<AssessmentSummary[]>;
   getAssessment: (id: string) => Promise<AssessmentRecord | null>;
-  createAssessment: (input: DqeInput, thresholds?: ScoreThresholds) => Promise<AssessmentRecord>;
-  updateAssessment: (id: string, input: DqeInput, thresholds?: ScoreThresholds) => Promise<AssessmentRecord | null>;
+  createAssessment: (input: DqeInput, thresholds?: ScoreThresholds, serviceCatalog?: Service[]) => Promise<AssessmentRecord>;
+  updateAssessment: (id: string, input: DqeInput, thresholds?: ScoreThresholds, serviceCatalog?: Service[]) => Promise<AssessmentRecord | null>;
   archiveAssessment: (id: string) => Promise<boolean>;
   getAdminConfig: () => Promise<AdminConfig>;
   updateAdminConfig: (config: AdminConfig) => Promise<AdminConfig>;
@@ -139,6 +145,39 @@ function approvalFromAction(action: "submit" | "approve" | "reject" | "revision"
   if (action === "approve") return "Approved";
   if (action === "reject") return "Rejected";
   return "Needs Revision";
+}
+
+function normalizeServiceCatalog(catalog: Service[] = defaultAdminConfig.serviceCatalog) {
+  const seen = new Set<string>();
+  return catalog
+    .map((service) => ({
+      ...service,
+      id: service.id.trim(),
+      name: service.name.trim(),
+      description: service.description.trim(),
+      strategic: Boolean(service.strategic),
+      disabled: Boolean(service.disabled),
+      defaultCapability: {
+        skills: Math.min(5, Math.max(1, Number(service.defaultCapability?.skills ?? 3))),
+        tools: Math.min(5, Math.max(1, Number(service.defaultCapability?.tools ?? 3))),
+        experience: Math.min(5, Math.max(1, Number(service.defaultCapability?.experience ?? 3)))
+      }
+    }))
+    .filter((service) => {
+      if (!service.id || !service.name || seen.has(service.id)) return false;
+      seen.add(service.id);
+      return true;
+    });
+}
+
+function normalizeAdminConfig(config: Partial<AdminConfig> = {}) {
+  return {
+    ...defaultAdminConfig,
+    ...config,
+    thresholds: { ...defaultAdminConfig.thresholds, ...config.thresholds },
+    defaultWeights: { ...defaultAdminConfig.defaultWeights, ...config.defaultWeights },
+    serviceCatalog: normalizeServiceCatalog(config.serviceCatalog ?? defaultAdminConfig.serviceCatalog)
+  };
 }
 
 async function createSqliteStore(): Promise<Store> {
@@ -207,12 +246,12 @@ async function createSqliteStore(): Promise<Store> {
 
   const getStoredAdminConfig = async () => {
     const row = db.prepare(`SELECT value_json FROM app_settings WHERE key = ?`).get("admin_config") as { value_json: string } | undefined;
-    return row ? ({ ...defaultAdminConfig, ...(JSON.parse(row.value_json) as AdminConfig) }) : defaultAdminConfig;
+    return row ? normalizeAdminConfig(JSON.parse(row.value_json) as AdminConfig) : defaultAdminConfig;
   };
 
   const updateStoredAdminConfig = async (config: AdminConfig) => {
     const now = new Date().toISOString();
-    const normalized: AdminConfig = { ...defaultAdminConfig, ...config };
+    const normalized = normalizeAdminConfig(config);
     db.prepare(`
       INSERT INTO app_settings (key, value_json, updated_at)
       VALUES (?, ?, ?)
@@ -263,13 +302,13 @@ async function createSqliteStore(): Promise<Store> {
       return rows.map(rowToSummary);
     },
     getAssessment: getAssessmentById,
-    async createAssessment(input, thresholds) {
+    async createAssessment(input, thresholds, serviceCatalog) {
       const now = new Date().toISOString();
       const record: AssessmentRecord = {
         id: randomUUID(),
         title: getTitle(input),
         input,
-        result: calculateDqe(input, thresholds),
+        result: calculateDqe(input, thresholds, serviceCatalog),
         approvalStatus: "Draft",
         submittedAt: null,
         decidedAt: null,
@@ -282,7 +321,7 @@ async function createSqliteStore(): Promise<Store> {
       saveRecord(record);
       return record;
     },
-    async updateAssessment(id, input, thresholds) {
+    async updateAssessment(id, input, thresholds, serviceCatalog) {
       const existing = await getAssessmentById(id);
       if (!existing) return null;
 
@@ -290,7 +329,7 @@ async function createSqliteStore(): Promise<Store> {
         ...existing,
         title: getTitle(input),
         input,
-        result: calculateDqe(input, thresholds),
+        result: calculateDqe(input, thresholds, serviceCatalog),
         updatedAt: new Date().toISOString()
       };
       saveRecord(updated);
@@ -388,12 +427,12 @@ async function createPostgresStore(url: string): Promise<Store> {
 
   const getStoredAdminConfig = async () => {
     const result = await pool.query<{ value_json: AdminConfig }>(`SELECT value_json FROM app_settings WHERE key = $1`, ["admin_config"]);
-    return result.rows[0]?.value_json ? { ...defaultAdminConfig, ...result.rows[0].value_json } : defaultAdminConfig;
+    return result.rows[0]?.value_json ? normalizeAdminConfig(result.rows[0].value_json) : defaultAdminConfig;
   };
 
   const updateStoredAdminConfig = async (config: AdminConfig) => {
     const now = new Date().toISOString();
-    const normalized: AdminConfig = { ...defaultAdminConfig, ...config };
+    const normalized = normalizeAdminConfig(config);
     await pool.query(
       `
         INSERT INTO app_settings (key, value_json, updated_at)
@@ -450,13 +489,13 @@ async function createPostgresStore(url: string): Promise<Store> {
       return result.rows.map(rowToSummary);
     },
     getAssessment: getAssessmentById,
-    async createAssessment(input, thresholds) {
+    async createAssessment(input, thresholds, serviceCatalog) {
       const now = new Date().toISOString();
       const record: AssessmentRecord = {
         id: randomUUID(),
         title: getTitle(input),
         input,
-        result: calculateDqe(input, thresholds),
+        result: calculateDqe(input, thresholds, serviceCatalog),
         approvalStatus: "Draft",
         submittedAt: null,
         decidedAt: null,
@@ -469,7 +508,7 @@ async function createPostgresStore(url: string): Promise<Store> {
       await saveRecord(record);
       return record;
     },
-    async updateAssessment(id, input, thresholds) {
+    async updateAssessment(id, input, thresholds, serviceCatalog) {
       const existing = await getAssessmentById(id);
       if (!existing) return null;
 
@@ -477,7 +516,7 @@ async function createPostgresStore(url: string): Promise<Store> {
         ...existing,
         title: getTitle(input),
         input,
-        result: calculateDqe(input, thresholds),
+        result: calculateDqe(input, thresholds, serviceCatalog),
         updatedAt: new Date().toISOString()
       };
       await saveRecord(updated);
@@ -526,7 +565,7 @@ app.get("/api/health", (_request, response) => {
 
 app.get("/api/model", (_request, response) => {
   response.json({
-    services,
+    services: defaultAdminConfig.serviceCatalog,
     riskFactors,
     defaultInput
   });
@@ -540,11 +579,12 @@ app.put("/api/admin/config", async (request, response) => {
   response.json(await store.updateAdminConfig(request.body as AdminConfig));
 });
 
-app.post("/api/score", (request, response) => {
+app.post("/api/score", async (request, response) => {
   try {
     const input = (request.body?.input ?? request.body) as DqeInput;
     const thresholds = request.body?.thresholds as ScoreThresholds | undefined;
-    response.json(calculateDqe(input, thresholds));
+    const config = await store.getAdminConfig();
+    response.json(calculateDqe(input, thresholds, config.serviceCatalog));
   } catch (error) {
     response.status(400).json({
       message: "Unable to score deal qualification input.",
@@ -582,7 +622,9 @@ function extractGeminiText(payload: unknown) {
 app.post("/api/ai-recommendation", async (request, response) => {
   const input = (request.body?.input ?? defaultInput) as DqeInput;
   const thresholds = request.body?.thresholds as ScoreThresholds | undefined;
-  const result = (request.body?.result ?? calculateDqe(input, thresholds)) as DqeResult;
+  const config = await store.getAdminConfig();
+  const serviceCatalog = config.serviceCatalog;
+  const result = (request.body?.result ?? calculateDqe(input, thresholds, serviceCatalog)) as DqeResult;
   const fallback = fallbackAiRecommendation(input, result);
 
   if (!process.env.GEMINI_API_KEY) {
@@ -615,7 +657,7 @@ app.post("/api/ai-recommendation", async (request, response) => {
                 text: JSON.stringify({
                   task: "Generate an executive DQE recommendation for this deal assessment. Use these sections: Executive Recommendation, Primary Risk, Critical Actions, Presales Advisor Guidance, Next Gate Requirement.",
                   deal: input.overview,
-                  selectedServices: services.filter((service) => input.requiredServices[service.id]).map((service) => service.name),
+                  selectedServices: getActiveServices(serviceCatalog).filter((service) => input.requiredServices[service.id]).map((service) => service.name),
                   riskScores: input.risk,
                   weights: input.weights,
                   result
@@ -653,12 +695,14 @@ app.get("/api/assessments/:id", async (request, response) => {
 });
 
 app.post("/api/assessments", async (request, response) => {
-  const record = await store.createAssessment(request.body.input ?? request.body, request.body.thresholds);
+  const config = await store.getAdminConfig();
+  const record = await store.createAssessment(request.body.input ?? request.body, request.body.thresholds, config.serviceCatalog);
   response.status(201).json(record);
 });
 
 app.put("/api/assessments/:id", async (request, response) => {
-  const updated = await store.updateAssessment(request.params.id, request.body.input ?? request.body, request.body.thresholds);
+  const config = await store.getAdminConfig();
+  const updated = await store.updateAssessment(request.params.id, request.body.input ?? request.body, request.body.thresholds, config.serviceCatalog);
   if (!updated) {
     response.status(404).json({ message: "Assessment not found." });
     return;

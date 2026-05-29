@@ -1590,8 +1590,10 @@ h1 {
 }
 
 .catalogue-heading {
-  display: grid;
+  align-items: center;
+  display: flex;
   gap: 4px;
+  justify-content: space-between;
 }
 
 .catalogue-heading > strong {
@@ -1645,6 +1647,13 @@ h1 {
   justify-content: space-between;
 }
 
+.catalogue-pills,
+.catalogue-switches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .catalogue-service-title strong {
   line-height: 1.25;
 }
@@ -1664,6 +1673,37 @@ h1 {
   background: #e9f6ee;
   border-color: #b9dcc6;
   color: var(--green);
+}
+
+.scope-pill.strategic {
+  background: #fff8e0;
+  border-color: #e2c768;
+  color: #7a4b00;
+}
+
+.scope-pill.disabled {
+  background: #f7eeee;
+  border-color: #e2c2c2;
+  color: #8a302a;
+}
+
+.catalogue-disabled {
+  opacity: 0.72;
+}
+
+.catalogue-edit-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.catalogue-switches label {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  font-size: 12px;
+  font-weight: 800;
+  gap: 6px;
 }
 
 .service-admin-list small,
@@ -1692,6 +1732,12 @@ h1 {
 .service-admin-list dd {
   font-weight: 800;
   margin: 0;
+}
+
+.service-admin-list dd input {
+  min-height: 34px;
+  padding: 5px 8px;
+  width: 100%;
 }
 
 .config-action {
@@ -1792,6 +1838,21 @@ h1 {
 
 .primary-action:hover {
   background: #17362b;
+}
+
+.secondary-action {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--ink);
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.secondary-action:hover {
+  border-color: var(--green);
 }
 
 .missing-grid {

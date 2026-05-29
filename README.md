@@ -6,8 +6,9 @@ to help BD and solutioning teams assess tenders/RFPs consistently before
 committing presales and delivery effort.
 
 The prototype converts an Excel-based qualification framework into a reusable
-web application with guided intake, service scope mapping, capability scoring,
-delivery risk scoring, approval workflow, saved assessments, and PDF export.
+web application with guided intake, editable service scope mapping, capability
+scoring, delivery risk scoring, management review workflow, saved
+qualifications, and PDF export.
 
 ## Why This Exists
 
@@ -29,9 +30,9 @@ process into a structured digital workflow.
 It demonstrates:
 
 - Process standardization for deal qualification.
-- Reusable assessment data instead of one-off spreadsheet reviews.
+- Reusable qualification data instead of one-off spreadsheet reviews.
 - Clearer risk visibility before proposal commitment.
-- Better management review through scoring, recommendations, approval status,
+- Better management review through scoring, recommendations, review status,
   and PDF reporting.
 - A foundation for future AI-assisted proposal support using internal knowledge.
 
@@ -44,7 +45,7 @@ The DQE prototype is intended to complement the BD process flow by acting as a
 structured qualification checkpoint during the tender/RFP stage. It helps BD and
 solutioning teams assess technical fit, commercial readiness, delivery risk, and
 proposal readiness before committing effort. Once an opportunity proceeds, the
-approved DQE assessment can be used as a reference for proposal development, PO
+approved DQE qualification can be used as a reference for proposal development, PO
 processing, and sales order handover.
 
 | BD stage              | DQE role                                                  |
@@ -61,23 +62,23 @@ processing, and sales order handover.
 
 Current prototype capabilities:
 
-- Dashboard with assessment history.
+- Dashboard with qualification history.
 - Tender/RFP intake and deal overview form.
 - BD process alignment tracker.
 - Commercial qualification inputs and scoring for budget, decision maker,
   funding, partner dependency, margin confidence, win probability, proposal
   status, and PO/SO reference.
-- Enfrasys service scope checklist with 30 catalogue services across cloud,
+- Editable Enfrasys service scope checklist with 30 seeded catalogue services across cloud,
   application/integration, data/AI, security, industry, and managed/advisory
   portfolios.
 - Capability scoring.
 - Risk matrix for development, time, and operations.
-- Editable assessment-level scoring weights.
+- Editable qualification-level scoring weights.
 - Central admin scoring configuration for default weights, thresholds, and
   recommendation rules.
-- Saved assessments using backend persistence.
+- Saved qualifications using backend persistence.
 - PostgreSQL support for production deployment.
-- Approval workflow with draft, submitted, approved, rejected, and revision
+- Management review workflow with draft, submitted, approved, rejected, and revision
   states.
 - PDF export / download report.
 - Rule-based recommendation output.
@@ -85,8 +86,10 @@ Current prototype capabilities:
 
 ## Service Catalogue
 
-The prototype now uses an Enfrasys-specific read-only service catalogue instead
-of a generic cloud list.
+The prototype now uses an Enfrasys-specific service catalogue instead of a
+generic cloud list. Admin users can add services, edit names/descriptions,
+change portfolio grouping, disable services without deleting historical data,
+mark strategic services, and set default capability values.
 
 | Portfolio                   | Example services                                                                                               |
 | --------------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -168,7 +171,7 @@ Do not commit real credentials. Use `.env.example` as the template.
 
 ## Demo Scenario
 
-The live Azure prototype includes two saved demo assessments in PostgreSQL:
+The live Azure prototype includes two saved demo qualifications in PostgreSQL:
 
 | Customer  | Opportunity                        | Purpose                                                                       | Status               |
 | --------- | ---------------------------------- | ----------------------------------------------------------------------------- | -------------------- |
@@ -176,18 +179,18 @@ The live Azure prototype includes two saved demo assessments in PostgreSQL:
 | MCMC      | Dynamics 365 Smart City Assessment | Dynamics 365, Smart City, integration, data, security, and support qualification | Proceed With Caution |
 
 Use these records to demonstrate dashboard history, reopen/save behaviour,
-scoring, risk review, approval workflow, Gemini AI recommendation, and PDF
+scoring, risk review, management review workflow, Gemini AI recommendation, and PDF
 export.
 
-To create a new assessment, use this basic flow:
+To create a new qualification, use this basic flow:
 
 1. Start from Dashboard.
-2. Select New Assessment.
+2. Select New Qualification.
 3. Complete Overview required fields.
 4. Select Service Scope.
 5. Score Capability and Risk.
-6. Review Score and recommendation.
-7. Export PDF or submit for approval.
+6. Review Qualification Decision and recommendation.
+7. Export PDF or submit for management review.
 
 ## Screenshots And Evidence
 
@@ -195,7 +198,7 @@ The repository includes a screenshot evidence pack:
 
 | File                                                           | Purpose                                   |
 | -------------------------------------------------------------- | ----------------------------------------- |
-| `screenshots/01-dashboard.png`                                 | Shows assessment dashboard                |
+| `screenshots/01-dashboard.png`                                 | Shows qualification dashboard             |
 | `screenshots/02-overview.png`                                  | Shows opportunity intake                  |
 | `screenshots/03-service-scope.png`                             | Shows selected services                   |
 | `screenshots/04-capability.png`                                | Shows capability scoring                  |
@@ -204,14 +207,13 @@ The repository includes a screenshot evidence pack:
 | `screenshots/07-pdf-export.png`                                | Shows PDF export action                   |
 | `screenshots/08-admin.png`                                     | Shows configurable scoring/admin          |
 | `screenshots/dqe-demo-report.pdf`                              | Exported demo report evidence             |
-| `demo-output/prolintas-tcs-cloud-modernisation-dqe-report.pdf` | Exported Prolintas demo assessment report |
+| `demo-output/prolintas-tcs-cloud-modernisation-dqe-report.pdf` | Exported Prolintas demo qualification report |
 
 ## Roadmap
 
 Recommended next improvements:
 
-- Make the service catalogue editable from Admin so portfolio owners can add,
-  disable, describe, and classify Enfrasys offerings without changing code.
+- Move catalogue editing behind role-based admin permissions.
 - Expand BD commercial scoring with strategic account value, submission effort,
   competitor position, procurement confidence, and commercial approval route.
 - Add role-based access control for admin and approver actions.

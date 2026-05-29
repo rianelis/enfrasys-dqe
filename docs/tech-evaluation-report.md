@@ -4,7 +4,7 @@
 
 The Enfrasys Deal Qualification Engine (DQE) is a Transformation prototype for
 structured opportunity qualification, technical risk assessment, and proposal
-readiness. It converts an Excel-based assessment model into a reusable web
+readiness. It converts an Excel-based qualification model into a reusable web
 application that BD, presales, solutioning, and delivery teams can use before
 committing effort to tenders, RFPs, and proposal work.
 
@@ -32,7 +32,7 @@ technical qualification to the wider BD process flow.
 
 DQE provides a structured decision workflow for deal qualification. Users
 capture deal details, select relevant services, score capability, evaluate
-delivery risks, generate a recommendation, and submit the assessment for review.
+delivery risks, generate a recommendation, and submit the qualification for review.
 
 The application acts as a qualification checkpoint before proposal commitment.
 It does not replace BD judgement, but it gives the team a repeatable process and
@@ -62,7 +62,7 @@ model training from scratch.
 RAG is more suitable for the next phase because it can use internal process
 documents, service catalogues, proposal templates, assumptions, exclusions, and
 historical examples without needing a custom trained model. The structured DQE
-workflow should remain the source of assessment data, while AI can help generate
+workflow should remain the source of qualification data, while AI can help generate
 recommendations and proposal support content.
 
 ## Prototype Scope
@@ -71,15 +71,15 @@ The current prototype demonstrates:
 
 | Module                | Purpose                                                                                               |
 | --------------------- | ----------------------------------------------------------------------------------------------------- |
-| Dashboard             | List previous assessments, scores, owners, status, and last updated date                              |
+| Dashboard             | List previous qualifications, risk scores, owners, status, and last updated date                      |
 | Requirement Intake    | Capture customer requirement, tender/RFP summary, timeline, budget, scope, and sector                 |
 | Service Scope         | Select Enfrasys-specific services relevant to the opportunity                                         |
 | Capability Match      | Score delivery confidence and capability alignment                                                    |
 | Risk Matrix           | Assess development, time, and operations risks                                                        |
-| Qualification Score   | Calculate score and recommendation                                                                    |
-| Approval Workflow     | Submit, approve, reject, or request revision                                                          |
+| Qualification Decision | Calculate risk score and recommendation                                                              |
+| Management Review     | Submit, approve, reject, or request revision                                                          |
 | PDF Export            | Produce a downloadable qualification summary                                                          |
-| Admin Configuration   | Manage scoring defaults, thresholds, and recommendation rules                                         |
+| Admin Configuration   | Manage scoring defaults, thresholds, recommendation rules, and editable service catalogue             |
 | Gemini Recommendation | Generate AI-assisted executive guidance from deal notes, selected services, risks, and scoring output |
 
 ## Service Catalogue Alignment
@@ -97,9 +97,9 @@ Enfrasys-oriented portfolios.
 | Managed & Advisory Services | Managed Services, Assessment / Workshop, Architecture Advisory, Training & Adoption, FinOps                    |
 
 This makes DQE closer to an internal Enfrasys presales tool rather than a
-generic cloud scoring demo. The catalogue remains read-only in this version, so
-the next improvement is to make it editable from Admin while preserving saved
-assessment history.
+generic cloud scoring demo. The catalogue is now editable from Admin and is
+stored in backend configuration, with disable support to preserve saved
+qualification history instead of deleting services used by older records.
 
 ## Alignment To BD Process
 
@@ -111,7 +111,7 @@ The DQE prototype is intended to complement the BD process flow by acting as a
 structured qualification checkpoint during the tender/RFP stage. It helps BD and
 solutioning teams assess technical fit, commercial readiness, delivery risk, and
 proposal readiness before committing effort. Once an opportunity proceeds, the
-approved DQE assessment can be used as a reference for proposal development, PO
+approved DQE qualification can be used as a reference for proposal development, PO
 processing, and sales order handover.
 
 | BD stage              | DQE role                                                                              |
@@ -121,7 +121,7 @@ processing, and sales order handover.
 | Technical review      | Validate service scope, capability, dependencies, and delivery risks                  |
 | Proposal decision     | Recommend proceed, proceed with conditions, clarify, escalate, or no-go               |
 | Proposal development  | Capture assumptions, exclusions, clarification questions, and SOW inputs              |
-| Management approval   | Submit the assessment for approval or revision                                        |
+| Management approval   | Submit the qualification for management review or revision                            |
 | PO / SO reference     | Use approved scope, risks, assumptions, and qualification record as handover evidence |
 
 This makes DQE complementary to the BD framework rather than a separate
@@ -135,7 +135,7 @@ qualification process.
 Transformation value:
 
 - Converts spreadsheet logic into an operational web application.
-- Improves consistency in tender/RFP assessment.
+- Improves consistency in tender/RFP qualification.
 - Creates reusable data for review and reporting.
 - Provides a foundation for AI-assisted proposal support.
 - Supports smoother cross-functional collaboration between BD, presales,
@@ -149,7 +149,7 @@ Positioning statement:
 
 ## Demo Scenario
 
-The live Azure prototype includes two saved demo assessments in PostgreSQL:
+The live Azure prototype includes two saved demo qualifications in PostgreSQL:
 
 | Customer  | Opportunity                        | Purpose                                                                                                                     | Result               |
 | --------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------- |
@@ -159,11 +159,11 @@ The live Azure prototype includes two saved demo assessments in PostgreSQL:
 Demo flow:
 
 1. Open the live Azure dashboard.
-2. Open the Prolintas or MCMC demo assessment.
+2. Open the Prolintas or MCMC demo qualification.
 3. Review the Overview, Service Scope, Capability, and Risk pages.
-4. Review the recommendation and top risks on the Score page.
+4. Review the recommendation and top risks on the Qualification Decision page.
 5. Generate the Gemini AI recommendation.
-6. Submit for approval or export the PDF report.
+6. Submit for management review or export the PDF report.
 
 ## Screenshots And Evidence
 
@@ -171,7 +171,7 @@ The repository includes the following evidence pack:
 
 | File                                                           | Purpose                                   |
 | -------------------------------------------------------------- | ----------------------------------------- |
-| `screenshots/01-dashboard.png`                                 | Shows assessment dashboard                |
+| `screenshots/01-dashboard.png`                                 | Shows qualification dashboard             |
 | `screenshots/02-overview.png`                                  | Shows opportunity intake                  |
 | `screenshots/03-service-scope.png`                             | Shows selected services                   |
 | `screenshots/04-capability.png`                                | Shows capability scoring                  |
@@ -180,13 +180,14 @@ The repository includes the following evidence pack:
 | `screenshots/07-pdf-export.png`                                | Shows PDF export action                   |
 | `screenshots/08-admin.png`                                     | Shows configurable scoring/admin          |
 | `screenshots/dqe-demo-report.pdf`                              | Exported demo report evidence             |
-| `demo-output/prolintas-tcs-cloud-modernisation-dqe-report.pdf` | Exported Prolintas demo assessment report |
+| `demo-output/prolintas-tcs-cloud-modernisation-dqe-report.pdf` | Exported Prolintas demo qualification report |
 
 ## Limitations
 
 Current limitations:
 
-- Service catalogue is still read-only.
+- Service catalogue editing is available, but should later be protected by
+  role-based admin permissions.
 - Commercial qualification now contributes to scoring and recommendation, but
   deeper BD factors such as strategic account value and submission effort can be
   added in the next phase.
@@ -201,32 +202,25 @@ Current limitations:
 
 Recommended next phase:
 
-1. Make the service catalogue editable through admin configuration:
-   - Add service.
-   - Edit description.
-   - Disable service.
-   - Assign category.
-   - Set default capability.
-   - Mark strategic service.
+1. Add role-based access for admins, owners, and approvers.
 2. Expand BD commercial qualification scoring:
    - Strategic account value.
    - Submission effort required.
    - Competitor position.
    - Procurement confidence.
    - Commercial approval route.
-3. Add role-based access for admins, owners, and approvers.
-4. Add RAG-based proposal assistant using internal templates, service
+3. Add RAG-based proposal assistant using internal templates, service
    descriptions, assumptions, exclusions, and BD guidebook content.
-5. Improve executive PDF report layout with Enfrasys branding, charts, metadata,
-   and approval/signature section.
+4. Improve executive PDF report layout with Enfrasys branding, charts, metadata,
+   and management review/signature section.
 
 ## Final Assessment
 
 DQE is already a credible functional prototype. It demonstrates the core engine,
-workflow, scoring, persistence, approval, reporting, and deployment foundation
+workflow, scoring, persistence, management review, reporting, and deployment foundation
 required for the prototype deliverable.
 
-The remaining improvement areas are deeper BD commercial scoring, editable
+The remaining improvement areas are deeper BD commercial scoring, role-based
 service catalogue governance, and richer AI-assisted proposal support. The
 README, report, screenshots, and demo evidence now position the prototype
 clearly against the Transformation KPI.
